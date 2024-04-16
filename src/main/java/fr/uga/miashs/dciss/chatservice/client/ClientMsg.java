@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import fr.uga.miashs.dciss.chatservice.common.Packet;
+import fr.uga.miashs.dciss.chatservice.server.ServerMsg;
+import fr.uga.miashs.dciss.chatservice.server.UserMsg;
 
 /**
  * Manages the connection to a ServerMsg. Method startSession() is used to²
@@ -43,6 +45,7 @@ public class ClientMsg {
 	private List<ConnectionListener> cListeners;
 
 	private String name;
+	private UserMsg userServer;
 
 	private Map<Integer,String> contacts ;
 
@@ -68,6 +71,13 @@ public class ClientMsg {
 		cListeners = new ArrayList<>();
 		this.name = name;
 		contacts = new TreeMap<Integer,String>();
+		try {
+			ServerMsg server = new ServerMsg(port); // Création de l'instance de ServerMsg avec le port spécifié
+			userServer = new UserMsg(id, server); // Initialisation de UserMsg avec l'identifiant et l'objet ServerMsg
+		} catch (IOException e) {
+
+			e.printStackTrace(); // Affichage de l'erreur
+		}
 	}
 
 	/**
@@ -77,8 +87,9 @@ public class ClientMsg {
 	 * @param address The server address or hostname
 	 * @param port    The port number
 	 */
-	public ClientMsg(String address, int port) {
-		this(0,null,address, port);
+
+	public ClientMsg(String address, int port) throws IOException {
+		this(0, "defaultName", address, port);
 	}
 
 	public String getName() {
@@ -87,7 +98,7 @@ public class ClientMsg {
 
 	public void setName(String name) {
 		this.name = name;
-		changePseudo.name;
+		userServer.changePseudo(name);
 	}
 
 	public void addContact(int id, String name) {
@@ -213,7 +224,7 @@ public class ClientMsg {
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
-		ClientMsg c = new ClientMsg("localhost", 1666);
+		ClientMsg c = new ClientMsg("localhost", 1656);
 
 		// add a dummy listener that print the content of message as a string
 		c.addMessageListener(p -> System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data)));
@@ -222,6 +233,8 @@ public class ClientMsg {
 		c.addConnectionListener(active ->  {if (!active) System.exit(0);});
 
 		c.startSession();
+		c.setName("toto");
+
 
 
 
