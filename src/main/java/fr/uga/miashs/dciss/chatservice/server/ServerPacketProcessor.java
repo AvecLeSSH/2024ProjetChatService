@@ -40,7 +40,9 @@ public class ServerPacketProcessor implements PacketProcessor {
 			removeMembers(p.srcId, buf);
 		}else if (type == 5) { //ajout d'un contact
 			addContact(p.srcId, buf);
-		}else if (type == 6 ) { //suppression d'un contact
+		}else if (type == 6) { //modification nom d'un contact
+			renameContact(p.srcId, buf);
+		}else if (type == 7 ) { //suppression d'un contact
 			removeContact(p.srcId, buf);
 		}else {
 			LOG.warning("Server message of type=" + type + " not handled by procesor");
