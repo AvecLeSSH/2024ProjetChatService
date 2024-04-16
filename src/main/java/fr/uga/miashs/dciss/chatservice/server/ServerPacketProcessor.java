@@ -46,11 +46,13 @@ public class ServerPacketProcessor implements PacketProcessor {
 //			removeContact(p.srcId, buf);
 //		}else if (type ==8) { //envoi de fichier
 //			sendFile(p.destId, p.srcId, buf);
-		}else {
+		} else if (type == 9) {
+			changePseudo(p);
+		} else {
 			LOG.warning("Server message of type=" + type + " not handled by procesor");
 		}
 	}
-	
+
 	public void createGroup(int ownerId, ByteBuffer data) {
 		int nb = data.getInt();
 		GroupMsg g = server.createGroup(ownerId);
@@ -73,7 +75,8 @@ public class ServerPacketProcessor implements PacketProcessor {
 		GroupMsg group = server.getGroup(groupId);
 		if (group.getOwner().getId() != userId) {
 			throw new IllegalArgumentException("User with id=" + userId + " is not the owner of the group with id=" + groupId);
-		}int nb = data.getInt();
+		}
+		int nb = data.getInt();
 		for (int i = 0; i < nb; i++) {
 			group.addMember(server.getUser(data.getInt()));
 		}
@@ -86,34 +89,39 @@ public class ServerPacketProcessor implements PacketProcessor {
 			throw new IllegalArgumentException("User with id=" + userId + " is not the owner of the group with id=" + groupId);
 
 		}
-			int nb = data.getInt();
-			for (int i = 0; i < nb; i++) {
-				group.removeMember(server.getUser(data.getInt()));
-			}
+		int nb = data.getInt();
+		for (int i = 0; i < nb; i++) {
+			group.removeMember(server.getUser(data.getInt()));
+		}
+	}
+
+
+	/*	public void addContact(int userId, ByteBuffer data) {
+			int contactId = data.getInt();
+			server.getUser(userId).addContact(server.getUser(contactId));
 		}
 
+		public void removeContact(int userId, ByteBuffer data) {
+			int contactId = data.getInt();
+			server.getUser(userId).removeContact(server.getUser(contactId));
+		}
 
+		public void renameContact(int userId, ByteBuffer data) {
+			int contactId = data.getInt();
+			String newName = new String(data.array(), data.position(), data.remaining());
+			server.getUser(userId).renameContact(server.getUser(contactId), newName);
+		}
+
+		public void sendFile(int destId, int userId, ByteBuffer data) {
+			int size = data.getInt();
+			byte[] file = new byte[size];
+			data.get(file);
+			server.getUser(destId).receiveFile(userId, file);
+		}*/
+	public void changePseudo(Packet packet) {
+		int userId = packet.srcId;
+		String pseudo = new String(packet.data);
+		UserMsg u = server.getUser(userId);
+		u.changePseudo(pseudo);
 	}
-
-/*	public void addContact(int userId, ByteBuffer data) {
-		int contactId = data.getInt();
-		server.getUser(userId).addContact(server.getUser(contactId));
-	}
-
-	public void removeContact(int userId, ByteBuffer data) {
-		int contactId = data.getInt();
-		server.getUser(userId).removeContact(server.getUser(contactId));
-	}
-
-	public void renameContact(int userId, ByteBuffer data) {
-		int contactId = data.getInt();
-		String newName = new String(data.array(), data.position(), data.remaining());
-		server.getUser(userId).renameContact(server.getUser(contactId), newName);
-	}
-
-	public void sendFile(int destId, int userId, ByteBuffer data) {
-		int size = data.getInt();
-		byte[] file = new byte[size];
-		data.get(file);
-		server.getUser(destId).receiveFile(userId, file);
-	}*/
+}

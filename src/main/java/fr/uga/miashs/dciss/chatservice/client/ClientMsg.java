@@ -43,6 +43,7 @@ public class ClientMsg {
 	private List<ConnectionListener> cListeners;
 
 	private String name;
+
 	private Map<Integer,String> contacts ;
 
 
@@ -86,6 +87,7 @@ public class ClientMsg {
 
 	public void setName(String name) {
 		this.name = name;
+		changePseudo.name;
 	}
 
 	public void addContact(int id, String name) {

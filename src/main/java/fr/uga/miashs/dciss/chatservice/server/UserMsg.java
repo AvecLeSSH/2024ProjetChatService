@@ -12,6 +12,7 @@
 package fr.uga.miashs.dciss.chatservice.server;
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.concurrent.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
@@ -25,14 +26,13 @@ public class UserMsg implements PacketProcessor{
 	private final static Logger LOG = Logger.getLogger(UserMsg.class.getName());
 	
 	private int userId;
+	private String pseudo;
 	private Set<GroupMsg> groups;
 
 	
 	private ServerMsg server;
 	private transient Socket s;
 	private transient boolean active;
-	private String name;
-	
 	private BlockingQueue<Packet> sendQueue;
 	
 	public UserMsg(int clientId,ServerMsg server) {
@@ -159,5 +159,23 @@ public class UserMsg implements PacketProcessor{
 	public void process(Packet p) {
 		sendQueue.offer(p);
 	}
-	
+
+	public void changePseudo(String pseudo) {
+		this.pseudo = pseudo;
+		Set<UserMsg> s = new HashSet<>();
+		for (GroupMsg g : groups) {
+			s.addAll(g.getMembers());
+		}
+		// pas s'envoyer le changement à soit meme
+		s.remove(this);
+
+		ByteBuffer buf = ByteBuffer.allocate(1+pseudo.getBytes().length);
+		buf.put((byte) 9);
+		buf.put(pseudo.getBytes());
+		// on a mis 0 en dest mais on aurai pu mettre n'importe quoi
+		Packet p = new Packet(userId,0,buf.array());
+		for (UserMsg u : s) {
+			u.process(p);
+		}
+	}
 }
