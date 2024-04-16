@@ -250,6 +250,26 @@ public class ClientMsg {
 			c.sendPacket(0, bos.toByteArray());
 
 		}
+
+		/* TEST POUR METHODE REMOVE USER
+		if (c.getIdentifier() == 5) {
+
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+			// byte 1 : create group on server
+			dos.writeByte(4);
+
+			// nb members
+			dos.writeInt(-1);
+			// list members
+			dos.writeInt(1);
+			dos.writeInt(1);
+			dos.flush();
+
+
+			c.sendPacket(0, bos.toByteArray());
+
+		} */
 		
 		
 
