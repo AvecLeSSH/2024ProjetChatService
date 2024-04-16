@@ -29,10 +29,20 @@ public class ServerPacketProcessor implements PacketProcessor {
 		// ByteBufferVersion. On aurait pu utiliser un ByteArrayInputStream + DataInputStream à la place
 		ByteBuffer buf = ByteBuffer.wrap(p.data);
 		byte type = buf.get();
-		
+
 		if (type == 1) { // cas creation de groupe
-			createGroup(p.srcId,buf);
-		} else {
+			createGroup(p.srcId, buf);
+		} else if (type == 2) { // cas suppression de groupe
+			deleteGroup(p.srcId, buf);
+		} else if (type == 3) { //ajout d'un ou plusieurs membres
+			addMembers(p.srcId, buf);
+		} else if (type == 4) { //suppression d'un ou plusieurs membres
+			removeMembers(p.srcId, buf);
+		}else if (type == 5) { //ajout d'un contact
+			addContact(p.srcId, buf);
+		}else if (type == 6 ) { //suppression d'un contact
+			removeContact(p.srcId, buf);
+		}else {
 			LOG.warning("Server message of type=" + type + " not handled by procesor");
 		}
 	}
@@ -44,5 +54,30 @@ public class ServerPacketProcessor implements PacketProcessor {
 			g.addMember(server.getUser(data.getInt()));
 		}
 	}
+
+	public void deleteGroup(int ownerId, ByteBuffer data) {
+		int groupId = data.getInt();
+
+		}
+	}
+
+	public void addMembers(int ownerId, ByteBuffer data) {
+		int groupId = data.getInt();
+		GroupMsg g = server.getGroup(groupId);
+		int nb = data.getInt();
+		for (int i = 0; i < nb; i++) {
+			g.addMember(server.getUser(data.getInt()));
+		}
+	}
+
+	public void removeMembers(int ownerId, ByteBuffer data) {
+		int groupId = data.getInt();
+		GroupMsg g = server.getGroup(groupId);
+		int nb = data.getInt();
+		for (int i = 0; i < nb; i++) {
+			g.removeMember(server.getUser(data.getInt()));
+		}
+	}
+
 
 }
