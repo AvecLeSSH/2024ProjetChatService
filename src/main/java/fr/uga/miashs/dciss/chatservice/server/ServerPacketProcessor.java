@@ -68,12 +68,14 @@ public class ServerPacketProcessor implements PacketProcessor {
 		server.removeGroup(groupId);
 	}
 
-	public void addMembers(int ownerId, ByteBuffer data) {
+	public void addMembers(int userId, ByteBuffer data) {
 		int groupId = data.getInt();
-		GroupMsg g = server.getGroup(groupId);
-		int nb = data.getInt();
+		GroupMsg group = server.getGroup(groupId);
+		if (group.getOwner().getId() != userId) {
+			throw new IllegalArgumentException("User with id=" + userId + " is not the owner of the group with id=" + groupId);
+		}int nb = data.getInt();
 		for (int i = 0; i < nb; i++) {
-			g.addMember(server.getUser(data.getInt()));
+			group.addMember(server.getUser(data.getInt()));
 		}
 	}
 
