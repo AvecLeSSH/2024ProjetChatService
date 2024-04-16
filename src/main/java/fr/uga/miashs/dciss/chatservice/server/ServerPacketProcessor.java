@@ -38,14 +38,14 @@ public class ServerPacketProcessor implements PacketProcessor {
 			addMembers(p.srcId, buf);
 		} else if (type == 4) { //suppression d'un ou plusieurs membres
 			removeMembers(p.srcId, buf);
-		}else if (type == 5) { //ajout d'un contact
-			addContact(p.srcId, buf);
-		}else if (type == 6) { //modification nom d'un contact
-			renameContact(p.srcId, buf);
-		}else if (type == 7 ) { //suppression d'un contact
-			removeContact(p.srcId, buf);
-		}else if (type ==8) { //envoi de fichier
-			sendFile(p.destId, p.srcId, buf);
+//		}else if (type == 5) { //ajout d'un contact
+//			addContact(p.srcId, buf);
+//		}else if (type == 6) { //modification nom d'un contact
+//			renameContact(p.srcId, buf);
+//		}else if (type == 7 ) { //suppression d'un contact
+//			removeContact(p.srcId, buf);
+//		}else if (type ==8) { //envoi de fichier
+//			sendFile(p.destId, p.srcId, buf);
 		}else {
 			LOG.warning("Server message of type=" + type + " not handled by procesor");
 		}
@@ -79,10 +79,10 @@ public class ServerPacketProcessor implements PacketProcessor {
 		}
 	}
 
-	public void removeMembers(int ownerId, ByteBuffer data) {
+	public void removeMembers(int userId, ByteBuffer data) {
 		int groupId = data.getInt();
 		GroupMsg group = server.getGroup(groupId);
-		if (group.groupId.getOwner().getId() != userId) {
+		if (group.getOwner().getId() != userId) {
 			throw new IllegalArgumentException("User with id=" + userId + " is not the owner of the group with id=" + groupId);
 
 		}
@@ -94,7 +94,8 @@ public class ServerPacketProcessor implements PacketProcessor {
 
 
 	}
-	public void addContact(int userId, ByteBuffer data) {
+
+/*	public void addContact(int userId, ByteBuffer data) {
 		int contactId = data.getInt();
 		server.getUser(userId).addContact(server.getUser(contactId));
 	}
@@ -115,5 +116,4 @@ public class ServerPacketProcessor implements PacketProcessor {
 		byte[] file = new byte[size];
 		data.get(file);
 		server.getUser(destId).receiveFile(userId, file);
-	}
-}
+	}*/
