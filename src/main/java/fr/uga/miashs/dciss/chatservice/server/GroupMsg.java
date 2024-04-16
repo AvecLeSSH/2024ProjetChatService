@@ -37,7 +37,7 @@ public class GroupMsg implements PacketProcessor {
 	
 	/**
 	 * This method has to be used to add a member to the group.
-	 * It update the bidirectional relationship, i.e. the user is added to the group and the the group is added to the user.
+	 * It updates the bidirectional relationship, i.e. the user is added to the group and the group is added to the user.
 	 * @param s
 	 * @return
 	 */
@@ -47,7 +47,7 @@ public class GroupMsg implements PacketProcessor {
 	
 	/**
 	 * This method has to be used to remove a member from the group.
-	 * It update the bidirectional relationship, i.e. the user is removed from the group and the the group is removed from the user.
+	 * It updates the bidirectional relationship, i.e. the user is removed from the group and the group is removed from the user.
 	 * @param s
 	 * @return
 	 */
@@ -65,8 +65,15 @@ public class GroupMsg implements PacketProcessor {
 		// send packet to members except the sender.
 		members.stream().filter(m->m.getId()!=p.srcId).forEach( m -> m.process(p));
 	}
+
+	// getter Owner of the group
+	public UserMsg getOwner() {
+		return owner;
+	}
+
+	//getter Group
 	
-	// to be used carrefully, because it does not update birectional relationship in case of addition or removal.
+	// to be used carefully, because it does not update birectional relationship in case of addition or removal.
 	protected Set<UserMsg> getMembers() {
 		return members;
 	}
