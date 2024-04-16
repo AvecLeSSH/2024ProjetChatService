@@ -44,6 +44,8 @@ public class ServerPacketProcessor implements PacketProcessor {
 			renameContact(p.srcId, buf);
 		}else if (type == 7 ) { //suppression d'un contact
 			removeContact(p.srcId, buf);
+		}else if (type ==8) { //envoi de fichier
+			sendFile(p.destId, p.srcId, buf);
 		}else {
 			LOG.warning("Server message of type=" + type + " not handled by procesor");
 		}
@@ -87,8 +89,29 @@ public class ServerPacketProcessor implements PacketProcessor {
 				group.removeMember(server.getUser(data.getInt()));
 			}
 		}
+
+
+	}
+	public void addContact(int userId, ByteBuffer data) {
+		int contactId = data.getInt();
+		server.getUser(userId).addContact(server.getUser(contactId));
 	}
 
+	public void removeContact(int userId, ByteBuffer data) {
+		int contactId = data.getInt();
+		server.getUser(userId).removeContact(server.getUser(contactId));
+	}
 
+	public void renameContact(int userId, ByteBuffer data) {
+		int contactId = data.getInt();
+		String newName = new String(data.array(), data.position(), data.remaining());
+		server.getUser(userId).renameContact(server.getUser(contactId), newName);
+	}
 
+	public void sendFile(int destId, int userId, ByteBuffer data) {
+		int size = data.getInt();
+		byte[] file = new byte[size];
+		data.get(file);
+		server.getUser(destId).receiveFile(userId, file);
+	}
 }
