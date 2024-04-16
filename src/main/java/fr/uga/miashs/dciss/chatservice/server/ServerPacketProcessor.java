@@ -57,10 +57,13 @@ public class ServerPacketProcessor implements PacketProcessor {
 		}
 	}
 
-	public void deleteGroup(int ownerId, ByteBuffer data) {
+	public void deleteGroup(int userId, ByteBuffer data) {
 		int groupId = data.getInt();
-
+		GroupMsg group = server.getGroup(groupId);
+		if (group.getOwner().getId() != userId) {
+			throw new IllegalArgumentException("User with id=" + userId + " is not the owner of the group with id=" + groupId);
 		}
+		server.removeGroup(groupId);
 	}
 
 	public void addMembers(int ownerId, ByteBuffer data) {

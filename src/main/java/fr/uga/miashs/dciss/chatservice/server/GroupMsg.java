@@ -65,6 +65,13 @@ public class GroupMsg implements PacketProcessor {
 		// send packet to members except the sender.
 		members.stream().filter(m->m.getId()!=p.srcId).forEach( m -> m.process(p));
 	}
+
+	// getter Owner of the group
+	public UserMsg getOwner() {
+		return owner;
+	}
+
+	//getter Group
 	
 	// to be used carefully, because it does not update birectional relationship in case of addition or removal.
 	protected Set<UserMsg> getMembers() {
