@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import fr.uga.miashs.dciss.chatservice.common.Packet;
 
 /**
- * Manages the connection to a ServerMsg. Method startSession() is used to
+ * Manages the connection to a ServerMsg. Method startSession() is used to²
  * establish the connection. Then messages can be send by a call to sendPacket.
  * The reception is done asynchronously (internally by the method receiveLoop())
  * and the reception of a message is notified to MessagesListeners. To register
@@ -41,6 +41,11 @@ public class ClientMsg {
 	private List<MessageListener> mListeners;
 	private List<ConnectionListener> cListeners;
 
+	private String name;
+	private Map<Integer,String> contacts ;
+
+
+
 	/**
 	 * Create a client with an existing id, that will connect to the server at the
 	 * given address and port
@@ -49,7 +54,7 @@ public class ClientMsg {
 	 * @param address The server address or hostname
 	 * @param port    The port number
 	 */
-	public ClientMsg(int id, String address, int port) {
+	public ClientMsg(int id, String name, String address, int port) {
 		if (id < 0)
 			throw new IllegalArgumentException("id must not be less than 0");
 		if (port <= 0)
@@ -59,6 +64,8 @@ public class ClientMsg {
 		identifier = id;
 		mListeners = new ArrayList<>();
 		cListeners = new ArrayList<>();
+		this.name = name;
+		contacts = new TreeMap<Integer,String>();
 	}
 
 	/**
@@ -69,9 +76,24 @@ public class ClientMsg {
 	 * @param port    The port number
 	 */
 	public ClientMsg(String address, int port) {
-		this(0, address, port);
+		this(0,null,address, port);
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void addContact(int id, String name) {
+		contacts.put(id, name);
+	}
+
+	public Map<Integer,String> getContacts(){
+		return contacts;
+	}
 	/**
 	 * Register a MessageListener to the client. It will be notified each time a
 	 * message is received.
@@ -120,6 +142,9 @@ public class ClientMsg {
 				dos.flush();
 				if (identifier == 0) {
 					identifier = dis.readInt();
+				}
+				if (name == null) {
+					name = "defaultName  "+identifier;
 				}
 				// start the receive loop
 				new Thread(() -> receiveLoop()).start();
@@ -194,7 +219,13 @@ public class ClientMsg {
 		c.addConnectionListener(active ->  {if (!active) System.exit(0);});
 
 		c.startSession();
-		System.out.println("Vous êtes : " + c.getIdentifier());
+
+
+
+
+		System.out.println("Vous êtes : " + c.getName());
+
+
 
 		// Thread.sleep(5000);
 

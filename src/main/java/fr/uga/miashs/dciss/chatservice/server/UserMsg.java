@@ -16,6 +16,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
+
 import fr.uga.miashs.dciss.chatservice.common.Packet;
 
 import java.util.*;
@@ -25,21 +26,26 @@ public class UserMsg implements PacketProcessor{
 	
 	private int userId;
 	private Set<GroupMsg> groups;
+
 	
 	private ServerMsg server;
 	private transient Socket s;
 	private transient boolean active;
+	private String name;
 	
 	private BlockingQueue<Packet> sendQueue;
 	
-	public UserMsg(int clientId, ServerMsg server) {
+	public UserMsg(int clientId,ServerMsg server) {
 		if (clientId<1) throw new IllegalArgumentException("id must not be less than 0");
 		this.server=server;
 		this.userId=clientId;
 		active=false;
 		sendQueue = new LinkedBlockingQueue<>();
 		groups = Collections.synchronizedSet(new HashSet<>());
+
 	}
+
+
 	
 	public int getId() {
 		return userId;
@@ -63,7 +69,7 @@ public class UserMsg implements PacketProcessor{
 	 */
 	public void beforeDelete() {
 		groups.forEach(g->g.getMembers().remove(this));
-		
+
 	}
 	
 	
@@ -143,7 +149,9 @@ public class UserMsg implements PacketProcessor{
 		}
 		close();
 	}
-	
+
+
+
 	/**
 	 * Method for adding a packet to the sending queue
 	 */
