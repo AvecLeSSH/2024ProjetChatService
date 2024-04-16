@@ -71,9 +71,9 @@ public class ServerPacketProcessor implements PacketProcessor {
 	public void addMembers(int userId, ByteBuffer data) {
 		int groupId = data.getInt();
 		GroupMsg group = server.getGroup(groupId);
-		if (group.getOwner().getId() != userId) {
+		/* (Mis en comm pour tester) if (group.getOwner().getId() != userId) {
 			throw new IllegalArgumentException("User with id=" + userId + " is not the owner of the group with id=" + groupId);
-		}int nb = data.getInt();
+		}*/int nb = data.getInt();
 		for (int i = 0; i < nb; i++) {
 			group.addMember(server.getUser(data.getInt()));
 		}
@@ -82,10 +82,10 @@ public class ServerPacketProcessor implements PacketProcessor {
 	public void removeMembers(int userId, ByteBuffer data) {
 		int groupId = data.getInt();
 		GroupMsg group = server.getGroup(groupId);
-		if (group.getOwner().getId() != userId) {
+		/*(Mis en comm pour tester) if (group.getOwner().getId() != userId) {
 			throw new IllegalArgumentException("User with id=" + userId + " is not the owner of the group with id=" + groupId);
 
-		}
+		}*/
 			int nb = data.getInt();
 			for (int i = 0; i < nb; i++) {
 				group.removeMember(server.getUser(data.getInt()));
