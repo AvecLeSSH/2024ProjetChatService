@@ -12,6 +12,7 @@
 package fr.uga.miashs.dciss.chatservice.server;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import fr.uga.miashs.dciss.chatservice.common.Packet;
@@ -38,8 +39,24 @@ public class ServerPacketProcessor implements PacketProcessor {
 			addMembers(p.srcId, buf);
 		} else if (type == 4) { //suppression d'un ou plusieurs membres
 			removeMembers(p.srcId, buf);
-//		}else if (type == 5) { //ajout d'un contact
+		}else if (type == 5) { //ajout d'un contact
 //			addContact(p.srcId, buf);
+			int userId = p.srcId;
+			int contactId = buf.getInt();
+			String contactPseudo = new String(p.data);
+			if (server.getUser(contactId) != null) {
+				server.getUser(userId).addContact(server.getUser(contactId));
+				LOG.info("userId " + userId + " a ajouté le contact " + contactPseudo);
+				//TRACE : print every userid and their contacts
+				LOG.info(server.getUser(p.srcId).getId() + " " + server.getUser(p.srcId).getContacts());
+
+				server.getUser(contactId).addContact(server.getUser(userId));
+				LOG.info("userId " + contactId + " a ajouté le contact " + server.getUser(userId).getName());
+				//TRACE : print every userid and their contacts
+				LOG.info(server.getUser(contactId).getId() + " " + server.getUser(contactId).getContacts());
+			} else {
+				LOG.warning("userId " + userId + " a essayé d'ajouter un contact inexistant");
+			}
 //		}else if (type == 6) { //modification nom d'un contact
 //			renameContact(p.srcId, buf);
 //		}else if (type == 7 ) { //suppression d'un contact
@@ -47,7 +64,17 @@ public class ServerPacketProcessor implements PacketProcessor {
 //		}else if (type ==8) { //envoi de fichier
 //			sendFile(p.destId, p.srcId, buf);
 		} else if (type == 9) {
-			changePseudo(p);
+				int userId = p.srcId;
+				int length = buf.getInt();
+				byte [] usernameByte = new byte[length];
+				buf.get(usernameByte);
+				String usernameByteString = new String(usernameByte, StandardCharsets.UTF_8);
+				String name = new String(p.data);
+				UserMsg u = server.getUser(userId);
+				server.getUser(userId).setName(usernameByteString);
+				LOG.info("userId " + userId + " a mis à jour son username en " + usernameByteString);
+				//TRACE : print every userid and their username
+				LOG.info(server.getUser(p.srcId).getId() + " " + server.getUser(p.srcId).getName());
 		} else {
 			LOG.warning("Server message of type=" + type + " not handled by procesor");
 		}
@@ -118,10 +145,4 @@ public class ServerPacketProcessor implements PacketProcessor {
 			data.get(file);
 			server.getUser(destId).receiveFile(userId, file);
 		}*/
-	public void changePseudo(Packet packet) {
-		int userId = packet.srcId;
-		String pseudo = new String(packet.data);
-		UserMsg u = server.getUser(userId);
-		u.changePseudo(pseudo);
-	}
 }

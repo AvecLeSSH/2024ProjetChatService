@@ -26,7 +26,7 @@ public class UserMsg implements PacketProcessor{
 	private final static Logger LOG = Logger.getLogger(UserMsg.class.getName());
 	
 	private int userId;
-	private String pseudo;
+	private String name;
 	private Set<GroupMsg> groups;
 
 	
@@ -49,6 +49,13 @@ public class UserMsg implements PacketProcessor{
 	
 	public int getId() {
 		return userId;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+	public void setName(String name) {
+		 this.name = name;
 	}
 	
 	public boolean removeGroup(GroupMsg g) {
@@ -160,22 +167,4 @@ public class UserMsg implements PacketProcessor{
 		sendQueue.offer(p);
 	}
 
-	public void changePseudo(String pseudo) {
-		this.pseudo = pseudo;
-		Set<UserMsg> s = new HashSet<>();
-		for (GroupMsg g : groups) {
-			s.addAll(g.getMembers());
-		}
-		// pas s'envoyer le changement à soit meme
-		s.remove(this);
-
-		ByteBuffer buf = ByteBuffer.allocate(1+pseudo.getBytes().length);
-		buf.put((byte) 9);
-		buf.put(pseudo.getBytes());
-		// on a mis 0 en dest mais on aurai pu mettre n'importe quoi
-		Packet p = new Packet(userId,0,buf.array());
-		for (UserMsg u : s) {
-			u.process(p);
-		}
-	}
 }
