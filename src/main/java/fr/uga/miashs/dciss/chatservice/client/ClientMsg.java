@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import fr.uga.miashs.dciss.chatservice.common.Packet;
 import fr.uga.miashs.dciss.chatservice.server.ServerMsg;
 import fr.uga.miashs.dciss.chatservice.server.UserMsg;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
 /**
  * Manages the connection to a ServerMsg. Method startSession() is used to²
  * establish the connection. Then messages can be send by a call to sendPacket.
@@ -191,6 +192,47 @@ public class ClientMsg {
 		}
 		
 	}
+
+	
+	public void sendFile(int destId, Paths filePath, byte [] fileTitle) throws IOException {
+		byte[] fileData = Files.readAllBytes(Paths.get(filePath.toString()));
+		//ajouter nom fichier et type fichier : dcp faire une autre sendPacket diff avec en paramètre nom et type
+		sendPacket(destId, fileData);
+
+		//méthode pour connaître le type : Files.probeContentType() TEST : typeFile = Files.probeContentType(Paths.get(dataFile.toString()));
+//		try {
+//			synchronized (dos) {
+//				dos.writeInt(destId);
+//				dos.writeInt((int) dataFile.length());
+//				dos.write(dataFile);
+//				dos.flush();
+//			}
+//		} catch (IOException e) {
+//			// error, connection closed
+//			closeSession();
+//		}
+	}
+
+	//SUGGESTION COPILOT
+//	public void sendFile(int destId, File file) {
+//		try {
+//			synchronized (dos) {
+//				dos.writeInt(destId);
+//				dos.writeInt((int) file.length());
+//				FileInputStream fis = new FileInputStream(file);
+//				byte[] buffer = new byte[1024];
+//				int bytesRead;
+//				while ((bytesRead = fis.read(buffer)) != -1) {
+//					dos.write(buffer, 0, bytesRead);
+//				}
+//				dos.flush();
+//				fis.close();
+//			}
+//		} catch (IOException e) {
+//			// error, connection closed
+//			closeSession();
+//		}
+//	}
 
 	/**
 	 * Start the receive loop. Has to be called only once.
