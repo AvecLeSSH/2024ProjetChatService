@@ -45,7 +45,7 @@ public class ClientMsg {
 	private List<ConnectionListener> cListeners;
 
 	private String name;
-	private UserMsg userServer;
+	//private UserMsg userServer;
 
 	private Map<Integer,String> contacts ;
 
@@ -71,13 +71,13 @@ public class ClientMsg {
 		cListeners = new ArrayList<>();
 		this.name = name;
 		contacts = new TreeMap<Integer,String>();
-		try {
+		/*try {
 			ServerMsg server = new ServerMsg(port); // Création de l'instance de ServerMsg avec le port spécifié
 			userServer = new UserMsg(id, server); // Initialisation de UserMsg avec l'identifiant et l'objet ServerMsg
 		} catch (IOException e) {
 
 			e.printStackTrace(); // Affichage de l'erreur
-		}
+		}*/
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class ClientMsg {
 	 */
 
 	public ClientMsg(String address, int port) throws IOException {
-		this(1, "defaultName", address, port);
+		this(0, "defaultName", address, port);
 	}
 
 	public String getName() {
@@ -154,7 +154,7 @@ public class ClientMsg {
 				dis = new DataInputStream(s.getInputStream());
 				dos.writeInt(identifier);
 				dos.flush();
-				if (identifier == 1) {
+				if (identifier == 0) {
 					identifier = dis.readInt();
 				}
 				if (name == null) {
