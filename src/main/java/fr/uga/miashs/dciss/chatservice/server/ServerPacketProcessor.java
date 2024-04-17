@@ -27,9 +27,11 @@ public class ServerPacketProcessor implements PacketProcessor {
 
 	@Override
 	public void process(Packet p) {
+		LOG.info("ServerPacketProcessor: type=");
 		// ByteBufferVersion. On aurait pu utiliser un ByteArrayInputStream + DataInputStream à la place
 		ByteBuffer buf = ByteBuffer.wrap(p.data);
 		byte type = buf.get();
+		LOG.info("ServerPacketProcessor: type=" + type);
 
 		if (type == 1) { // cas creation de groupe
 			createGroup(p.srcId, buf);
@@ -40,20 +42,15 @@ public class ServerPacketProcessor implements PacketProcessor {
 		} else if (type == 4) { //suppression d'un ou plusieurs membres
 			removeMembers(p.srcId, buf);
 		}else if (type == 5) { //ajout d'un contact
-//			addContact(p.srcId, buf);
+//
+			LOG.info("userId " + p.srcId + " a demandé un ajout " + buf.getInt() + " à sa liste de contacts");
 			int userId = p.srcId;
 			int contactId = buf.getInt();
-			String contactPseudo = new String(p.data);
+//			String contactPseudo = new String(p.data);
 			if (server.getUser(contactId) != null) {
-				server.getUser(userId).addContact(server.getUser(contactId));
-				LOG.info("userId " + userId + " a ajouté le contact " + contactPseudo);
-				//TRACE : print every userid and their contacts
-				LOG.info(server.getUser(p.srcId).getId() + " " + server.getUser(p.srcId).getContacts());
-
-				server.getUser(contactId).addContact(server.getUser(userId));
-				LOG.info("userId " + contactId + " a ajouté le contact " + server.getUser(userId).getName());
-				//TRACE : print every userid and their contacts
-				LOG.info(server.getUser(contactId).getId() + " " + server.getUser(contactId).getContacts());
+//				server.getUser(userId).addContact(server.getUser(contactId));
+				LOG.info("userId " + userId + " a ajouté le contact " + contactId + " à sa liste de contacts");
+				confirmAddContact(userId, contactId);
 			} else {
 				LOG.warning("userId " + userId + " a essayé d'ajouter un contact inexistant");
 			}
@@ -122,7 +119,18 @@ public class ServerPacketProcessor implements PacketProcessor {
 		}
 	}
 
+	public void confirmAddContact(int userId, int contactId) {
+		LOG.info("INFO 2 userId " + userId + " a ajouté le contact " + contactId + " à sa liste de contacts");
+		UserMsg contact = server.getUser(contactId);
+		String contactName = contact.getName();
 
+		ByteBuffer buf = ByteBuffer.allocate(4 + contactName.getBytes().length);
+		buf.putInt(contactId);
+		buf.put(contactName.getBytes());
+
+		UserMsg user = server.getUser(userId);
+		user.process(new Packet(0, userId, buf.array()));
+	}
 	/*	public void addContact(int userId, ByteBuffer data) {
 			int contactId = data.getInt();
 			server.getUser(userId).addContact(server.getUser(contactId));

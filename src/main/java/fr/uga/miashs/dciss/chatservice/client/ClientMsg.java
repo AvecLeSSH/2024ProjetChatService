@@ -198,7 +198,7 @@ public class ClientMsg {
 	 */
 	public void sendPacket(int destId, byte[] data) {
 		try {
-			LOG.warning("dos : " + dos);
+		//	LOG.warning("dos : " + dos);
 			synchronized (dos) {
 				dos.writeInt(destId);
 				dos.writeInt(data.length);
@@ -236,10 +236,7 @@ public class ClientMsg {
 		}
 	}
 
-	public void addContact(int id, String name) {
-
-		// Le client ajoute un nom à ses contacts
-		contacts.put(id, name);
+	public void askAddContact(int id) {
 
 		// Le client envoie le packet au serveur
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -247,9 +244,8 @@ public class ClientMsg {
 
 		try {
 			dos.writeByte(5);
-			dos.writeInt(4+name.length());
+//			dos.writeInt(4);
 			dos.writeInt(id);
-			dos.write(name.getBytes(StandardCharsets.UTF_8));
 			dos.flush();
 			sendPacket(0, bos.toByteArray());
 			System.out.println("Demande d'ajout de contact au serveur envoyée");
@@ -257,6 +253,16 @@ public class ClientMsg {
 			e.printStackTrace();
 		}
 	}
+//
+//	public void addContact(int id, String name) {
+//		// Le client ajoute un nom à ses contacts
+//		if(askAddContact(id) ){
+//			contacts.put(id, name);
+//		}
+//		else
+//
+//		contacts.put(id, name);
+//	}
 	
 	public void sendFile(int destId, Paths filePath, byte [] fileTitle) throws IOException {
 		byte[] fileData = Files.readAllBytes(Paths.get(filePath.toString()));
@@ -402,6 +408,11 @@ public class ClientMsg {
 				String newUsername = sc.nextLine();
 				c.setName(newUsername);
 				System.out.println("Vous êtes " + c.getName());
+//
+//				System.out.println("Qui voulez vous ajouter dans vos contacts");
+//				int id = Integer.parseInt(sc.nextLine());
+//				c.askAddContact(id);
+//				System.out.println("Demande d'ajout de contact envoyée");
 
 				System.out.println("A qui voulez vous écrire ? ");
 				int dest = Integer.parseInt(sc.nextLine());

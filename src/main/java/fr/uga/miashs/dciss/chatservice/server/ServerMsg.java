@@ -65,7 +65,7 @@ public class ServerMsg {
 		LOG.info("Group "+res.getId()+" created");
 		return res;
 	}
-	
+
 	public boolean removeGroup(int groupId) {
 		GroupMsg g =groups.remove(groupId);
 		if (g==null) return false;
@@ -83,6 +83,7 @@ public class ServerMsg {
 	public UserMsg getUser(int userId) {
 		return users.get(userId);
 	}
+
 	
 	// Methode utilisée pour savoir quoi faire d'un paquet
 	// reçu par le serveur
