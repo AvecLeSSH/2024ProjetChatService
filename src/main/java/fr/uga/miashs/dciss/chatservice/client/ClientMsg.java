@@ -317,37 +317,7 @@ public class ClientMsg {
 		closeSession();
 	}
 
-	private void receiveFile() {
-		try {
-			while (s != null && !s.isClosed()) {
-
-				int sender = dis.readInt();
-				int dest = dis.readInt();
-				int dataLength = dis.readInt();
-				byte[] data = new byte[dataLength];
-				dis.readFully(data);
-				int titleLength = dis.readInt();
-				byte[] titleBytes = new byte[titleLength];
-				dis.readFully(titleBytes);
-
-				//on convertit le titre de bytes en String
-				String title = new String(titleBytes);
-
-				//[pas sûr de la logique] on écrit les données dans un fichier avec le titre du fichier
-				try (FileOutputStream fos = new FileOutputStream(title)) {
-					fos.write(data);
-				}
-
-				notifyMessageListeners(new Packet(sender, dest, data, titleBytes));
-
-			}
-		} catch (IOException e) {
-			// error, connection closed
-			System.err.println("Error while receiving file: " + e.getMessage());
-		}
-		closeSession();
-	}
-
+	
 	public void closeSession() {
 		try {
 			if (s != null)
