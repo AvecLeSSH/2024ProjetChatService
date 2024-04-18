@@ -363,7 +363,7 @@ public class ClientMsg {
 		//c.setName("Ilias");
 		//c.askAddContact(1);
 
-		//test fichier
+		// //test fichier
 		// c.addMessageListener(p -> {
 		// 	if (p.titleBytes != null) {
 		// 		String title = new String(p.titleBytes);
@@ -398,6 +398,20 @@ public class ClientMsg {
 
 		System.out.println("Vous êtes : " + c.getName());
 
+		if (c.getIdentifier() == 5) {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+
+			// protocole 8 : fichiers
+			dos.writeByte(8);
+			// list members
+			dos.writeInt(1);
+			dos.writeInt(3);
+			dos.flush();
+
+			c.sendPacket(0, bos.toByteArray());
+
+		}
 
 
 		// Thread.sleep(5000);
