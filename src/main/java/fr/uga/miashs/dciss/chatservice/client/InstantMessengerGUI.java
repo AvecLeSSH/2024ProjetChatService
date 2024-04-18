@@ -1,14 +1,3 @@
-package fr.uga.miashs.dciss.chatservice.client;/*
- * Copyright (c) 2024.  Jerome David. Univ. Grenoble Alpes.
- * This file is part of DcissChatService.
- *
- * DcissChatService is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- *
- * DcissChatService is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
- */
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -17,6 +6,8 @@ public class InstantMessengerGUI extends JFrame {
     private JTextArea chatArea;
     private JTextField messageField;
     private JButton sendButton;
+    private JTextField usernameField;
+    private JButton connectButton;
 
     public InstantMessengerGUI() {
         setTitle("Messagerie Instantanée");
@@ -28,13 +19,34 @@ public class InstantMessengerGUI extends JFrame {
     }
 
     private void initComponents() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        JPanel connectionPanel = new JPanel();
+        connectionPanel.setLayout(new BorderLayout());
+
+        JPanel connectInputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        connectInputPanel.add(new JLabel("Pseudo:"));
+        usernameField = new JTextField(15);
+        connectInputPanel.add(usernameField);
+        connectButton = new JButton("Se connecter");
+        connectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                connect();
+            }
+        });
+        connectInputPanel.add(connectButton);
+        connectionPanel.add(connectInputPanel, BorderLayout.CENTER);
+
+        tabbedPane.addTab("Connexion", connectionPanel);
+
+        JPanel chatPanel = new JPanel();
+        chatPanel.setLayout(new BorderLayout());
 
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(chatArea);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        chatPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BorderLayout());
@@ -51,9 +63,24 @@ public class InstantMessengerGUI extends JFrame {
         });
         bottomPanel.add(sendButton, BorderLayout.EAST);
 
-        panel.add(bottomPanel, BorderLayout.SOUTH);
+        chatPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        add(panel);
+        tabbedPane.addTab("Chat", chatPanel);
+
+        add(tabbedPane);
+    }
+
+    private void connect() {
+        String username = usernameField.getText().trim();
+        if (!username.isEmpty()) {
+            // Ajoutez le code ici pour gérer la connexion au serveur avec le pseudo
+            chatArea.append("Connecté en tant que: " + username + "\n");
+            // Vous pouvez également changer d'onglet après la connexion réussie
+            JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
+            tabbedPane.setSelectedIndex(1); // Onglet de chat
+        } else {
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un pseudo valide.", "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void sendMessage() {
