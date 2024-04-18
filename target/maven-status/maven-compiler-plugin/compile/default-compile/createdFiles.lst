@@ -1,5 +1,6 @@
 fr\uga\miashs\dciss\chatservice\server\ServerPacketProcessor.class
 fr\uga\miashs\dciss\chatservice\server\PacketProcessor.class
+fr\uga\miashs\dciss\chatservice\client\PacketListener.class
 fr\uga\miashs\dciss\chatservice\client\ClientMsg.class
 fr\uga\miashs\dciss\chatservice\common\TxtMessage.class
 fr\uga\miashs\dciss\chatservice\client\InstantMessengerGUI$1.class
