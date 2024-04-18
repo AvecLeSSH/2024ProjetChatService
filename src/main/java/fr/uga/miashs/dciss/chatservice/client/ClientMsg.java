@@ -26,8 +26,8 @@ import fr.uga.miashs.dciss.chatservice.server.GroupMsg;
 import fr.uga.miashs.dciss.chatservice.server.ServerMsg;
 import fr.uga.miashs.dciss.chatservice.server.UserMsg;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.logging.*;
 /**
  * Manages the connection to a ServerMsg. Method startSession() is used to²
@@ -212,6 +212,33 @@ public class ClientMsg {
 		
 	}
 
+	//changer le nom des deux méthodes suivantes
+	// Méthode pour envoyer un fichier avec un titre (elle sera utiliser dans la méthode suivante : sendFile. Cette dernière permet de récupérer les données et de les envoyés grâce à la méthode sendFileAndTitle)
+	public void sendFileAndTitle(int destId, byte[] data, byte[] title) {
+		try {
+			synchronized (dos) {
+				dos.writeInt(destId);
+				dos.writeInt(data.length);
+				dos.write(data);
+				dos.writeInt(title.length); //on envoie la taille du titre
+				dos.write(title); //on envoie le titre
+				dos.flush();
+			}
+		} catch (IOException e) {
+			// error, connection closed
+			closeSession();
+		}
+		
+	}
+	// Méthode pour envoyer un fichier grâce à la méthode sendFileAndTitle 
+	public void sendFile(int destId, Path filePath, String title) throws IOException { 
+		byte[] titleBytes = title.getBytes(); //on récupère le titre du fichier et on le transforme en bytes
+		byte[] fileData = Files.readAllBytes(filePath); //on récupère le contenu fichier et on le transforme en bytes
+		sendFileAndTitle(destId, fileData, titleBytes); //on envoie le fichier via la métjode sendPacket
+		System.out.println("Le fichier s'est bien envoyé"); //on vérifie que le fichier s'est bien envoyé
+		
+	}
+
 
 	public void setName(String name) {
 
@@ -220,13 +247,12 @@ public class ClientMsg {
 
 		// Le client envoie le packet au serveur
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		dos = new DataOutputStream(bos);
+		DataOutputStream dos1 = new DataOutputStream(bos);
 
 		try {
-			dos.writeByte(9);
-			dos.writeInt(name.length());
-			dos.write(name.getBytes(StandardCharsets.UTF_8));
-			dos.flush();
+			dos1.writeByte(9);
+			dos1.writeUTF(name);
+			dos1.flush();
 			LOG.warning("dos size : " + bos.toByteArray());
 
 			sendPacket(0, bos.toByteArray());
@@ -264,45 +290,11 @@ public class ClientMsg {
 //		contacts.put(id, name);
 //	}
 	
-	public void sendFile(int destId, Paths filePath, byte [] fileTitle) throws IOException {
+	/*public void sendFile(int destId, Paths filePath, byte [] fileTitle) throws IOException {
 		byte[] fileData = Files.readAllBytes(Paths.get(filePath.toString()));
 		//ajouter nom fichier et type fichier : dcp faire une autre sendPacket diff avec en paramètre nom et type
-		sendPacket(destId, fileData);
-
-		//méthode pour connaître le type : Files.probeContentType() TEST : typeFile = Files.probeContentType(Paths.get(dataFile.toString()));
-//		try {
-//			synchronized (dos) {
-//				dos.writeInt(destId);
-//				dos.writeInt((int) dataFile.length());
-//				dos.write(dataFile);
-//				dos.flush();
-//			}
-//		} catch (IOException e) {
-//			// error, connection closed
-//			closeSession();
-//		}
-	}
-
-	//SUGGESTION COPILOT
-//	public void sendFile(int destId, File file) {
-//		try {
-//			synchronized (dos) {
-//				dos.writeInt(destId);
-//				dos.writeInt((int) file.length());
-//				FileInputStream fis = new FileInputStream(file);
-//				byte[] buffer = new byte[1024];
-//				int bytesRead;
-//				while ((bytesRead = fis.read(buffer)) != -1) {
-//					dos.write(buffer, 0, bytesRead);
-//				}
-//				dos.flush();
-//				fis.close();
-//			}
-//		} catch (IOException e) {
-//			// error, connection closed
-//			closeSession();
-//		}
-//	}
+		sendPacket(destId, fileData);/*
+	
 
 	/**
 	 * Start the receive loop. Has to be called only once.
@@ -325,6 +317,37 @@ public class ClientMsg {
 		closeSession();
 	}
 
+	private void receiveFile() {
+		try {
+			while (s != null && !s.isClosed()) {
+
+				int sender = dis.readInt();
+				int dest = dis.readInt();
+				int dataLength = dis.readInt();
+				byte[] data = new byte[dataLength];
+				dis.readFully(data);
+				int titleLength = dis.readInt();
+				byte[] titleBytes = new byte[titleLength];
+				dis.readFully(titleBytes);
+
+				//on convertit le titre de bytes en String
+				String title = new String(titleBytes);
+
+				//[pas sûr de la logique] on écrit les données dans un fichier avec le titre du fichier
+				try (FileOutputStream fos = new FileOutputStream(title)) {
+					fos.write(data);
+				}
+
+				notifyMessageListeners(new Packet(sender, dest, data, titleBytes));
+
+			}
+		} catch (IOException e) {
+			// error, connection closed
+			System.err.println("Error while receiving file: " + e.getMessage());
+		}
+		closeSession();
+	}
+
 	public void closeSession() {
 		try {
 			if (s != null)
@@ -337,7 +360,22 @@ public class ClientMsg {
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
 		ClientMsg c = new ClientMsg("localhost", 1666);
-		c.setName("Ilias");
+		//c.setName("Ilias");
+		//c.askAddContact(1);
+
+		// //test fichier
+		// c.addMessageListener(p -> {
+		// 	if (p.titleBytes != null) {
+		// 		String title = new String(p.titleBytes);
+		// 		try (FileOutputStream fos = new FileOutputStream(title)) {
+		// 			fos.write(p.data);
+		// 		} catch (IOException e) {
+		// 			System.err.println("Error while saving file: " + e.getMessage());
+		// 		}
+		// 	} else {
+		// 		System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data));
+		// 	}
+		// });
 
 		// add a dummy listener that print the content of message as a string
 		c.addMessageListener(p -> System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data)));
@@ -349,11 +387,31 @@ public class ClientMsg {
 		//c.setName("toto");
 
 
-
+		//test fichier : envoyer fichier
+		//  Path path = Paths.get("path/to/your/file.txt");
+		//  byte[] data = Files.readAllBytes(path);
+		//  byte[] titleBytes = path.getFileName().toString().getBytes();
+		//  dos.writeInt(8); //on lui dit qu'on est dans le protocole 8 : celui des fichiers
+		 
+		//  c.sendPacket(new Packet(1, 2, data, titleBytes));
 
 
 		System.out.println("Vous êtes : " + c.getName());
 
+		if (c.getIdentifier() == 5) {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+
+			// protocole 8 : fichiers
+			dos.writeByte(8);
+			// list members
+			dos.writeInt(1);
+			dos.writeInt(3);
+			dos.flush();
+
+			c.sendPacket(0, bos.toByteArray());
+
+		}
 
 
 		// Thread.sleep(5000);
@@ -401,13 +459,16 @@ public class ClientMsg {
 
 		Scanner sc = new Scanner(System.in);
 		String lu = null;
+
+		System.out.println("\nNouveau nom d'utilisateur : ");
+		String newUsername = sc.nextLine();
+		c.setName(newUsername);
+		System.out.println("Vous êtes " + c.getName());
+
 		while (!"\\quit".equals(lu)) {
 			try {
 				// test modification de name
-				System.out.println("\nNouveau nom d'utilisateur : ");
-				String newUsername = sc.nextLine();
-				c.setName(newUsername);
-				System.out.println("Vous êtes " + c.getName());
+
 //
 //				System.out.println("Qui voulez vous ajouter dans vos contacts");
 //				int id = Integer.parseInt(sc.nextLine());

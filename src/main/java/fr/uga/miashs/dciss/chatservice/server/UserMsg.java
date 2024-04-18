@@ -195,4 +195,35 @@ public class UserMsg implements PacketProcessor{
 		sendQueue.offer(p);
 	}
 
+	//test fichiers
+	public void receiveFile(int userId, byte[] fileData, ByteBuffer title) {
+		Packet p = null;
+		try {
+			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+			// tant que la connexion n'est pas terminée
+			while (active && s.isConnected()) {
+				// on récupère un message à envoyer dans la file
+				// sinon on attend, car la méthode take est "bloquante" tant que la file est vide
+				p = sendQueue.take();
+				// on envoie le paquet au client
+				dos.writeInt(p.srcId);
+				dos.writeInt(p.destId);
+				dos.writeInt(p.data.length);
+				dos.write(p.data);
+				dos.writeInt(p.titleBytes.length);
+				dos.write(p.titleBytes);
+				dos.flush();
+				
+			}
+		} catch (IOException e) {
+			// remet le paquet dans la file si pb de transmission (connexion terminée)
+			if (p!=null) sendQueue.offer(p);
+			LOG.warning("Connection with client "+userId+" is broken...close it.");
+			//e.printStackTrace();
+		} catch (InterruptedException e) {
+			throw new ServerException("Sending loop thread of "+userId+" has been interrupted.",e);
+		}
+		close();
+	}
+
 }

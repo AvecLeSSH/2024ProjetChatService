@@ -27,7 +27,7 @@ public class ServerPacketProcessor implements PacketProcessor {
 
 	@Override
 	public void process(Packet p) {
-		LOG.info("ServerPacketProcessor: type=");
+		LOG.info("Un paket est reçu par le serveur");
 		// ByteBufferVersion. On aurait pu utiliser un ByteArrayInputStream + DataInputStream à la place
 		ByteBuffer buf = ByteBuffer.wrap(p.data);
 		byte type = buf.get();
@@ -58,9 +58,9 @@ public class ServerPacketProcessor implements PacketProcessor {
 //			renameContact(p.srcId, buf);
 //		}else if (type == 7 ) { //suppression d'un contact
 //			removeContact(p.srcId, buf);
-//		}else if (type ==8) { //envoi de fichier
-//			sendFile(p.destId, p.srcId, buf);
-		} else if (type == 9) {
+		}else if (type ==8) { //envoi de fichier
+			sendFile(p.destId, p.srcId, buf, buf);
+		} /*else if (type == 9) {
 				int userId = p.srcId;
 				int length = buf.getInt();
 				byte [] usernameByte = new byte[length];
@@ -71,7 +71,17 @@ public class ServerPacketProcessor implements PacketProcessor {
 				server.getUser(userId).setName(usernameByteString);
 				LOG.info("userId " + userId + " a mis à jour son username en " + usernameByteString);
 				//TRACE : print every userid and their username
-				LOG.info(server.getUser(p.srcId).getId() + " " + server.getUser(p.srcId).getName());
+				LOG.info(server.getUser(p.srcId).getId() + " " + server.getUser(p.srcId).getName());*/
+		else if (type == 9) {
+			int userId = p.srcId;
+			String usernameByteString = new String(p.data,1,p.data.length-1,StandardCharsets.UTF_8);
+			UserMsg user = server.getUser(userId);
+			if (user != null) {
+				user.setName(usernameByteString);
+				LOG.info("userId " + userId + " a mis à jour son nom en " + usernameByteString);
+			} else {
+				LOG.warning("Utilisateur avec l'ID " + userId + " non trouvé pour mettre à jour le nom.");
+			}
 		} else {
 			LOG.warning("Server message of type=" + type + " not handled by procesor");
 		}
@@ -146,11 +156,18 @@ public class ServerPacketProcessor implements PacketProcessor {
 			String newName = new String(data.array(), data.position(), data.remaining());
 			server.getUser(userId).renameContact(server.getUser(contactId), newName);
 		}
-
-		public void sendFile(int destId, int userId, ByteBuffer data) {
+*/
+		public void sendFile(int destId, int userId, ByteBuffer data, ByteBuffer title) {
 			int size = data.getInt();
-			byte[] file = new byte[size];
-			data.get(file);
-			server.getUser(destId).receiveFile(userId, file);
-		}*/
+			byte[] fileData = new byte[size];
+			data.get(fileData);
+			server.getUser(destId).receiveFile(userId, fileData, title);
+		}
+		//ancienne version 
+// 		public void sendFile(int destId, int userId, ByteBuffer data) {
+// 			int size = data.getInt();
+// 			byte[] file = new byte[size];
+// 			data.get(file);
+// 			server.getUser(destId).receiveFile(userId, file);
+// 		}
 }
