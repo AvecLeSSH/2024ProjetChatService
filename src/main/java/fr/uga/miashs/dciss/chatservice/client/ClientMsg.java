@@ -333,7 +333,7 @@ public class ClientMsg {
 				//on convertit le titre de bytes en String
 				String title = new String(titleBytes);
 
-				//on écrit les données dans un fichier avec le titre du fichier
+				//[pas sûr de la logique] on écrit les données dans un fichier avec le titre du fichier
 				try (FileOutputStream fos = new FileOutputStream(title)) {
 					fos.write(data);
 				}
