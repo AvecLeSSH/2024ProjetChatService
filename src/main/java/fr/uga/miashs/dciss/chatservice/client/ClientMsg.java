@@ -15,14 +15,20 @@ package fr.uga.miashs.dciss.chatservice.client;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import fr.uga.miashs.dciss.chatservice.common.Packet;
+import fr.uga.miashs.dciss.chatservice.server.GroupMsg;
 import fr.uga.miashs.dciss.chatservice.server.ServerMsg;
 import fr.uga.miashs.dciss.chatservice.server.UserMsg;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import java.util.logging.*;
 /**
  * Manages the connection to a ServerMsg. Method startSession() is used to²
  * establish the connection. Then messages can be send by a call to sendPacket.
@@ -49,6 +55,7 @@ public class ClientMsg {
 	//private UserMsg userServer;
 
 	private Map<Integer,String> contacts ;
+	private Logger LOG = Logger.getLogger(ClientMsg.class.getName());
 
 
 
@@ -97,14 +104,25 @@ public class ClientMsg {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-		//userServer.changePseudo(name);
-	}
 
-	public void addContact(int id, String name) {
-		contacts.put(id, name);
+/*	public void setName(String name) {
+		this.name = name;
+		Set<UserMsg> s = new HashSet<>();
+
+		// pas s'envoyer le changement à soit meme
+		s.remove(this);
+
+		ByteBuffer buf = ByteBuffer.allocate(1+name.getBytes().length);
+		buf.put((byte) 9);
+		buf.put(name.getBytes());
+		// on a mis 0 en dest mais on aurai pu mettre n'importe quoi
+		Packet p = new Packet(identifier,0,buf.array());
+		for (UserMsg u : s) {
+			u.process(p);
+		}
 	}
+*/
+
 
 	public Map<Integer,String> getContacts(){
 		return contacts;
@@ -180,6 +198,7 @@ public class ClientMsg {
 	 */
 	public void sendPacket(int destId, byte[] data) {
 		try {
+		//	LOG.warning("dos : " + dos);
 			synchronized (dos) {
 				dos.writeInt(destId);
 				dos.writeInt(data.length);
@@ -192,6 +211,62 @@ public class ClientMsg {
 		}
 		
 	}
+
+
+	public void setName(String name) {
+
+		// Le client modifie son nom
+		this.name = name;
+
+		// Le client envoie le packet au serveur
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos1 = new DataOutputStream(bos);
+
+		try {
+			dos1.writeByte(9);
+			dos1.writeUTF(name);
+			dos1.flush();
+			LOG.warning("dos size : " + bos.toByteArray());
+
+			sendPacket(0, bos.toByteArray());
+			System.out.println("Packet de modification du pseudo envoyé ");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void askAddContact(int id) {
+
+		// Le client envoie le packet au serveur
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		dos = new DataOutputStream(bos);
+
+		try {
+			dos.writeByte(5);
+//			dos.writeInt(4);
+			dos.writeInt(id);
+			dos.flush();
+			sendPacket(0, bos.toByteArray());
+			System.out.println("Demande d'ajout de contact au serveur envoyée");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+//
+//	public void addContact(int id, String name) {
+//		// Le client ajoute un nom à ses contacts
+//		if(askAddContact(id) ){
+//			contacts.put(id, name);
+//		}
+//		else
+//
+//		contacts.put(id, name);
+//	}
+	
+	/*public void sendFile(int destId, Paths filePath, byte [] fileTitle) throws IOException {
+		byte[] fileData = Files.readAllBytes(Paths.get(filePath.toString()));
+		//ajouter nom fichier et type fichier : dcp faire une autre sendPacket diff avec en paramètre nom et type
+		sendPacket(destId, fileData);/*
 	
 	//changer le nom des deux méthodes suivantes
 	// Méthode pour envoyer un fichier avec un titre (elle sera utiliser dans la méthode suivante : sendFile. Cette dernière permet de récupérer les données et de les envoyés grâce à la méthode sendFileAndTitle)
@@ -256,7 +331,11 @@ public class ClientMsg {
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
 		ClientMsg c = new ClientMsg("localhost", 1666);
-		c.setName("Ilias");
+		//c.setName("Ilias");
+		//c.askAddContact(1);
+
+
+
 
 		// add a dummy listener that print the content of message as a string
 		c.addMessageListener(p -> System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data)));
@@ -320,8 +399,22 @@ public class ClientMsg {
 
 		Scanner sc = new Scanner(System.in);
 		String lu = null;
+
+		System.out.println("\nNouveau nom d'utilisateur : ");
+		String newUsername = sc.nextLine();
+		c.setName(newUsername);
+		System.out.println("Vous êtes " + c.getName());
+
 		while (!"\\quit".equals(lu)) {
 			try {
+				// test modification de name
+
+//
+//				System.out.println("Qui voulez vous ajouter dans vos contacts");
+//				int id = Integer.parseInt(sc.nextLine());
+//				c.askAddContact(id);
+//				System.out.println("Demande d'ajout de contact envoyée");
+
 				System.out.println("A qui voulez vous écrire ? ");
 				int dest = Integer.parseInt(sc.nextLine());
 

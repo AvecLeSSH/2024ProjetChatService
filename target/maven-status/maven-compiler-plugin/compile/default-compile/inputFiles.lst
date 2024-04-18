@@ -2,6 +2,7 @@ C:\Users\Ilias\Desktop\DCISS\Programmation\Programmation_2\2024ProjetChatService
 C:\Users\Ilias\Desktop\DCISS\Programmation\Programmation_2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\TxtMessage.java
 C:\Users\Ilias\Desktop\DCISS\Programmation\Programmation_2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerException.java
 C:\Users\Ilias\Desktop\DCISS\Programmation\Programmation_2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerMsg.java
+C:\Users\Ilias\Desktop\DCISS\Programmation\Programmation_2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\InstantMessengerGUI.java
 C:\Users\Ilias\Desktop\DCISS\Programmation\Programmation_2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\MessageListener.java
 C:\Users\Ilias\Desktop\DCISS\Programmation\Programmation_2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerPacketProcessor.java
 C:\Users\Ilias\Desktop\DCISS\Programmation\Programmation_2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\PacketProcessor.java

@@ -26,7 +26,7 @@ public class UserMsg implements PacketProcessor{
 	private final static Logger LOG = Logger.getLogger(UserMsg.class.getName());
 	
 	private int userId;
-	private String pseudo;
+	private String name;
 	private Set<GroupMsg> groups;
 
 	
@@ -50,6 +50,14 @@ public class UserMsg implements PacketProcessor{
 	public int getId() {
 		return userId;
 	}
+
+	public String getName() {
+		return this.name;
+	}
+	public void setName(String name) {
+		 this.name = name;
+	}
+
 	
 	public boolean removeGroup(GroupMsg g) {
 		if (groups.remove(g)) {
@@ -63,7 +71,10 @@ public class UserMsg implements PacketProcessor{
 	protected Set<GroupMsg> getGroups() {
 		return groups;
 	}
-	
+
+
+
+
 	/*
 	 * This method has to be called before removing a group in order to clean membership.
 	 */
@@ -149,7 +160,31 @@ public class UserMsg implements PacketProcessor{
 		}
 		close();
 	}
+	public void sendContact(int userId, String username) {
+		Packet p = null;
 
+		try {
+			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+			dos.writeInt(p.srcId);
+			dos.writeInt(p.destId);
+			dos.writeInt(p.data.length);
+			dos.write(p.data);
+			dos.flush();
+		}
+
+			catch (IOException e) {
+			// remet le paquet dans la file si pb de transmission (connexion terminée)
+			if (p!=null) sendQueue.offer(p);
+			LOG.warning("Connection with client "+userId+" is broken...close it.");
+			//e.printStackTrace();
+	}
+
+	}
+//	public void getContacts(int userId) {
+//		ByteBuffer buf = ByteBuffer.allocate(1);
+//		buf.put((byte)6);
+//		sendQueue.offer(new Packet(0,userId,buf.array()));
+//	}
 
 
 	/**
@@ -160,22 +195,4 @@ public class UserMsg implements PacketProcessor{
 		sendQueue.offer(p);
 	}
 
-	public void changePseudo(String pseudo) {
-		this.pseudo = pseudo;
-		Set<UserMsg> s = new HashSet<>();
-		for (GroupMsg g : groups) {
-			s.addAll(g.getMembers());
-		}
-		// pas s'envoyer le changement à soit meme
-		s.remove(this);
-
-		ByteBuffer buf = ByteBuffer.allocate(1+pseudo.getBytes().length);
-		buf.put((byte) 9);
-		buf.put(pseudo.getBytes());
-		// on a mis 0 en dest mais on aurai pu mettre n'importe quoi
-		Packet p = new Packet(userId,0,buf.array());
-		for (UserMsg u : s) {
-			u.process(p);
-		}
-	}
 }
