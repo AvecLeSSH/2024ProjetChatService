@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import fr.uga.miashs.dciss.chatservice.common.Message;
 import fr.uga.miashs.dciss.chatservice.common.Packet;
 
 import java.util.*;

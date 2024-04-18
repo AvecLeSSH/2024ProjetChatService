@@ -18,6 +18,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 
+import fr.uga.miashs.dciss.chatservice.common.ConnexionBDD;
+import fr.uga.miashs.dciss.chatservice.common.Message;
 import fr.uga.miashs.dciss.chatservice.common.Packet;
 
 import java.util.*;
@@ -125,6 +127,9 @@ public class UserMsg implements PacketProcessor{
 				server.processPacket(new Packet(userId,destId,content));
 				Message m = new Message(userId,destId,new String(content));
 				server.getMessages().add(m);
+				ConnexionBDD connexion = new ConnexionBDD();
+				connexion.connectToDatabase();
+				connexion.insertMessages(server.getMessages());
 			}
 			
 		} catch (IOException e) {
