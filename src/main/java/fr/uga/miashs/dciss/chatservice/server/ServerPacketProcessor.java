@@ -58,8 +58,8 @@ public class ServerPacketProcessor implements PacketProcessor {
 //			renameContact(p.srcId, buf);
 //		}else if (type == 7 ) { //suppression d'un contact
 //			removeContact(p.srcId, buf);
-//		}else if (type ==8) { //envoi de fichier
-//			sendFile(p.destId, p.srcId, buf);
+		}else if (type ==8) { //envoi de fichier
+			sendFile(p.destId, p.srcId, buf, buf);
 		} /*else if (type == 9) {
 				int userId = p.srcId;
 				int length = buf.getInt();
@@ -168,11 +168,18 @@ public class ServerPacketProcessor implements PacketProcessor {
 			String newName = new String(data.array(), data.position(), data.remaining());
 			server.getUser(userId).renameContact(server.getUser(contactId), newName);
 		}
-
-		public void sendFile(int destId, int userId, ByteBuffer data) {
+*/
+		public void sendFile(int destId, int userId, ByteBuffer data, ByteBuffer title) {
 			int size = data.getInt();
-			byte[] file = new byte[size];
-			data.get(file);
-			server.getUser(destId).receiveFile(userId, file);
-		}*/
+			byte[] fileData = new byte[size];
+			data.get(fileData);
+			server.getUser(destId).receiveFile(userId, fileData, title);
+		}
+		//ancienne version 
+// 		public void sendFile(int destId, int userId, ByteBuffer data) {
+// 			int size = data.getInt();
+// 			byte[] file = new byte[size];
+// 			data.get(file);
+// 			server.getUser(destId).receiveFile(userId, file);
+// 		}
 }

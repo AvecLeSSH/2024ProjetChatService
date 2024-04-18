@@ -26,8 +26,8 @@ import fr.uga.miashs.dciss.chatservice.server.GroupMsg;
 import fr.uga.miashs.dciss.chatservice.server.ServerMsg;
 import fr.uga.miashs.dciss.chatservice.server.UserMsg;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.logging.*;
 /**
  * Manages the connection to a ServerMsg. Method startSession() is used to²
@@ -212,6 +212,33 @@ public class ClientMsg {
 		
 	}
 
+	//changer le nom des deux méthodes suivantes
+	// Méthode pour envoyer un fichier avec un titre (elle sera utiliser dans la méthode suivante : sendFile. Cette dernière permet de récupérer les données et de les envoyés grâce à la méthode sendFileAndTitle)
+	public void sendFileAndTitle(int destId, byte[] data, byte[] title) {
+		try {
+			synchronized (dos) {
+				dos.writeInt(destId);
+				dos.writeInt(data.length);
+				dos.write(data);
+				dos.writeInt(title.length); //on envoie la taille du titre
+				dos.write(title); //on envoie le titre
+				dos.flush();
+			}
+		} catch (IOException e) {
+			// error, connection closed
+			closeSession();
+		}
+		
+	}
+	// Méthode pour envoyer un fichier grâce à la méthode sendFileAndTitle 
+	public void sendFile(int destId, Path filePath, String title) throws IOException { 
+		byte[] titleBytes = title.getBytes(); //on récupère le titre du fichier et on le transforme en bytes
+		byte[] fileData = Files.readAllBytes(filePath); //on récupère le contenu fichier et on le transforme en bytes
+		sendFileAndTitle(destId, fileData, titleBytes); //on envoie le fichier via la métjode sendPacket
+		System.out.println("Le fichier s'est bien envoyé"); //on vérifie que le fichier s'est bien envoyé
+		
+	}
+
 
 	public void setName(String name) {
 
@@ -269,41 +296,7 @@ public class ClientMsg {
 		byte[] fileData = Files.readAllBytes(Paths.get(filePath.toString()));
 		//ajouter nom fichier et type fichier : dcp faire une autre sendPacket diff avec en paramètre nom et type
 		sendPacket(destId, fileData);/*
-
-		//méthode pour connaître le type : Files.probeContentType() TEST : typeFile = Files.probeContentType(Paths.get(dataFile.toString()));
-//		try {
-//			synchronized (dos) {
-//				dos.writeInt(destId);
-//				dos.writeInt((int) dataFile.length());
-//				dos.write(dataFile);
-//				dos.flush();
-//			}
-//		} catch (IOException e) {
-//			// error, connection closed
-//			closeSession();
-//		}
-	}
-
-	//SUGGESTION COPILOT
-//	public void sendFile(int destId, File file) {
-//		try {
-//			synchronized (dos) {
-//				dos.writeInt(destId);
-//				dos.writeInt((int) file.length());
-//				FileInputStream fis = new FileInputStream(file);
-//				byte[] buffer = new byte[1024];
-//				int bytesRead;
-//				while ((bytesRead = fis.read(buffer)) != -1) {
-//					dos.write(buffer, 0, bytesRead);
-//				}
-//				dos.flush();
-//				fis.close();
-//			}
-//		} catch (IOException e) {
-//			// error, connection closed
-//			closeSession();
-//		}
-//	}
+	
 
 	/**
 	 * Start the receive loop. Has to be called only once.
@@ -326,6 +319,7 @@ public class ClientMsg {
 		closeSession();
 	}
 
+	
 	public void closeSession() {
 		try {
 			if (s != null)
@@ -342,8 +336,19 @@ public class ClientMsg {
 		//c.setName("Ilias");
 		//c.askAddContact(1);
 
-
-
+		// //test fichier
+		// c.addMessageListener(p -> {
+		// 	if (p.titleBytes != null) {
+		// 		String title = new String(p.titleBytes);
+		// 		try (FileOutputStream fos = new FileOutputStream(title)) {
+		// 			fos.write(p.data);
+		// 		} catch (IOException e) {
+		// 			System.err.println("Error while saving file: " + e.getMessage());
+		// 		}
+		// 	} else {
+		// 		System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data));
+		// 	}
+		// });
 
 		// add a dummy listener that print the content of message as a string
 		c.addMessageListener(p -> System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data)));
@@ -355,11 +360,31 @@ public class ClientMsg {
 		//c.setName("toto");
 
 
-
+		//test fichier : envoyer fichier
+		//  Path path = Paths.get("path/to/your/file.txt");
+		//  byte[] data = Files.readAllBytes(path);
+		//  byte[] titleBytes = path.getFileName().toString().getBytes();
+		//  dos.writeInt(8); //on lui dit qu'on est dans le protocole 8 : celui des fichiers
+		 
+		//  c.sendPacket(new Packet(1, 2, data, titleBytes));
 
 
 		System.out.println("Vous êtes : " + c.getName());
 
+		if (c.getIdentifier() == 5) {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+
+			// protocole 8 : fichiers
+			dos.writeByte(8);
+			// list members
+			dos.writeInt(1);
+			dos.writeInt(3);
+			dos.flush();
+
+			c.sendPacket(0, bos.toByteArray());
+
+		}
 
 
 		// Thread.sleep(5000);
@@ -448,5 +473,87 @@ public class ClientMsg {
 		c.closeSession();
 
 	}
+	// methode pour distinguer les messages recus peu importe le format
+	private void receiveFile() {
+		try {
+			while (s != null && !s.isClosed()) {
+				int sender = dis.readInt();
+				int dest = dis.readInt();
+				int length = dis.readInt();
+				byte[] data = new byte[length];
+				dis.readFully(data);
+				String messageType = getMessageType(data);
+				System.out.println("Received a " + messageType + " message.");
+				notifyMessageListeners(new Packet(sender, dest, data));
+			}
+		} catch (IOException e) {
+			// error, connection closed
+		}
+		closeSession();
+	}
 
+
+	public String getMessageType(byte[] data) {
+		String type = "unknown";
+		if (data != null && data.length > 0) {
+			switch (data[0]) {
+				case (byte) 0xFF:
+					if (data.length > 1 && data[1] == (byte) 0xD8) {
+						type = "image/jpeg";
+					}
+					break;
+				case (byte) 0x89:
+					if (data.length > 3 && data[1] == (byte) 0x50 && data[2] == (byte) 0x4E && data[3] == (byte) 0x47) {
+						type = "image/png";
+					}
+					break;
+				case (byte) 0x47:
+					if (data.length > 3 && data[1] == (byte) 0x49 && data[2] == (byte) 0x46 && data[3] == (byte) 0x38) {
+						type = "image/gif";
+					}
+					break;
+				case (byte) 0x25:
+					if (data.length > 4 && data[1] == (byte) 0x50 && data[2] == (byte) 0x44 && data[3] == (byte) 0x46) {
+						type = "application/pdf";
+					}
+					break;
+				default:
+					type = "text";
+					break;
+			}
+		}
+		return type;
+
+
+	}
+
+	/*public Object fileTypeReader(){
+		// faire une methode qui transforme le tableau de bytes en le type de fichiers que la methode precedente a dit.
+	String type = getMessageType(data);
+	Object file= null;
+
+	switch (type){
+		case "image/jpeg":
+		case "image/png":
+		case "image/gif":
+			try {
+				ByteArrayOutputStream bis = new ByteArrayOutputStream(data);
+				BufferedImage bImage = ImageIO.read(bis);
+				file = bImage;
+			}
+			catch (IOException e){
+				e.printStackTrace();
+			}
+			break;
+		case "text":
+			file = new String(data, StandardCharsets.UTF_8);
+			break;
+		default:
+			System.out.println("Type de fichier non pris en charge: " + type);
+			break;
+	}
+	return file;
+	}
+
+	 */
 }
