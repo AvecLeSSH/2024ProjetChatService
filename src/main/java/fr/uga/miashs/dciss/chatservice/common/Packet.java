@@ -19,13 +19,22 @@ public class Packet {
 	public final int srcId;
 	public final int destId;
 	public final byte[] data;
+	public final byte[] titleBytes;
 	
 	public Packet(int srcId, int destId, byte[] data) {
 		super();
 		this.srcId = srcId;
 		this.destId = destId;
 		this.data = data;
+		this.titleBytes = null; //il n'y a pas de titre ici car c'est pour les envoient de messages normaux
 	}
 	
+	public Packet(int srcId, int destId, byte[] data, byte[] titleBytes) { //Packet pour les fichiers
+        super();
+        this.srcId = srcId;
+        this.destId = destId;
+        this.data = data;
+        this.titleBytes = titleBytes;
+    }
 	
 }
