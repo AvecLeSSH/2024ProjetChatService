@@ -35,4 +35,7 @@ public class Message {
         return content;
     }
 
+    public String toString() {
+        return "Message from " + id_src + " to " + id_dest + " : " + content;
+    }
 }
