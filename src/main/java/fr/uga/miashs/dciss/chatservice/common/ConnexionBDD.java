@@ -11,6 +11,8 @@
 
 package fr.uga.miashs.dciss.chatservice.common;
 
+import jdk.javadoc.internal.doclint.Messages;
+
 import java.sql.*;  // Import required packages
 
 public class ConnexionBDD {

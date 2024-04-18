@@ -123,6 +123,8 @@ public class UserMsg implements PacketProcessor{
 				dis.readFully(content);
 				// on envoie le paquet à ServerMsg pour qu'il le gère
 				server.processPacket(new Packet(userId,destId,content));
+				Message m = new Message(userId,destId,new String(content));
+				server.getMessages().add(m);
 			}
 			
 		} catch (IOException e) {

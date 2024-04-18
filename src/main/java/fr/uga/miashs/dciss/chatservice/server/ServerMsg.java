@@ -34,6 +34,7 @@ public class ServerMsg {
 	// maps pour associer les id aux users et groupes
 	private Map<Integer, UserMsg> users;
 	private Map<Integer, GroupMsg> groups;
+	private List <Message> messages;
 	
 	
 	
@@ -86,6 +87,12 @@ public class ServerMsg {
 	
 	public UserMsg getUser(int userId) {
 		return users.get(userId);
+	}
+
+
+
+	public List<Message> getMessages() {
+		return messages;
 	}
 
 	
