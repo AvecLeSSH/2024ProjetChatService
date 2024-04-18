@@ -157,11 +157,11 @@ public class ServerPacketProcessor implements PacketProcessor {
 			server.getUser(userId).renameContact(server.getUser(contactId), newName);
 		}
 */
-		public void sendFile(int destId, int userId, ByteBuffer data) {
+		public void sendFile(int destId, int userId, ByteBuffer data, ByteBuffer title) {
 			int size = data.getInt();
 			byte[] fileData = new byte[size];
 			data.get(fileData);
-			server.getUser(destId).receiveFile(userId, fileData);
+			server.getUser(destId).receiveFile(userId, fileData, title);
 		}
 		//ancienne version 
 // 		public void sendFile(int destId, int userId, ByteBuffer data) {
