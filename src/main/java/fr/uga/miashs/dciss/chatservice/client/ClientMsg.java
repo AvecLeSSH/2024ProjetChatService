@@ -295,35 +295,6 @@ public class ClientMsg {
 		//ajouter nom fichier et type fichier : dcp faire une autre sendPacket diff avec en paramètre nom et type
 		sendPacket(destId, fileData);/*
 	
-	//changer le nom des deux méthodes suivantes
-	// Méthode pour envoyer un fichier avec un titre (elle sera utiliser dans la méthode suivante : sendFile. Cette dernière permet de récupérer les données et de les envoyés grâce à la méthode sendFileAndTitle)
-	public void sendFileAndTitle(int destId, byte[] data, byte[] title) {
-		try {
-			synchronized (dos) {
-				dos.writeInt(destId);
-				dos.writeInt(data.length);
-				dos.write(data);
-				dos.writeInt(title.length); //on envoie la taille du titre
-				dos.write(title); //on envoie le titre
-				dos.flush();
-			}
-		} catch (IOException e) {
-			// error, connection closed
-			closeSession();
-		}
-		
-	}
-	// Méthode pour envoyer un fichier grâce à la méthode sendFileAndTitle 
-	public void sendFile(int destId, Path filePath, String title) throws IOException { 
-		byte[] titleBytes = title.getBytes(); //on récupère le titre du fichier et on le transforme en bytes
-		byte[] fileData = Files.readAllBytes(filePath); //on récupère le contenu fichier et on le transforme en bytes
-		sendFileAndTitle(destId, fileData, titleBytes); //on envoie le fichier via la métjode sendPacket
-		System.out.println("Le fichier s'est bien envoyé"); //on vérifie que le fichier s'est bien envoyé
-		
-	}
-
-		//méthode pour connaître le type : Files.probeContentType() TEST : typeFile = Files.probeContentType(Paths.get(dataFile.toString()));
-
 
 	/**
 	 * Start the receive loop. Has to be called only once.
@@ -342,6 +313,37 @@ public class ClientMsg {
 			}
 		} catch (IOException e) {
 			// error, connection closed
+		}
+		closeSession();
+	}
+
+	private void receiveFile() {
+		try {
+			while (s != null && !s.isClosed()) {
+
+				int sender = dis.readInt();
+				int dest = dis.readInt();
+				int dataLength = dis.readInt();
+				byte[] data = new byte[dataLength];
+				dis.readFully(data);
+				int titleLength = dis.readInt();
+				byte[] titleBytes = new byte[titleLength];
+				dis.readFully(titleBytes);
+
+				//on convertit le titre de bytes en String
+				String title = new String(titleBytes);
+
+				//on écrit les données dans un fichier avec le titre du fichier
+				try (FileOutputStream fos = new FileOutputStream(title)) {
+					fos.write(data);
+				}
+
+				notifyMessageListeners(new Packet(sender, dest, data, titleBytes));
+
+			}
+		} catch (IOException e) {
+			// error, connection closed
+			System.err.println("Error while receiving file: " + e.getMessage());
 		}
 		closeSession();
 	}
