@@ -52,6 +52,7 @@ public class ServerMsg {
 		nextGroupId = new AtomicInteger(-1);
 		sp = new ServerPacketProcessor(this);
 		executor = Executors.newCachedThreadPool();
+		messages = new ArrayList<>();
 	}
 
 	public GroupMsg getGroup(int groupId) {

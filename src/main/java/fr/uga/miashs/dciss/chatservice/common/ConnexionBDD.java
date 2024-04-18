@@ -11,7 +11,7 @@
 
 package fr.uga.miashs.dciss.chatservice.common;
 
-import jdk.javadoc.internal.doclint.Messages;
+//import jdk.javadoc.internal.doclint.Messages;
 import java.util.List;
 
 import java.sql.*;  // Import required packages
