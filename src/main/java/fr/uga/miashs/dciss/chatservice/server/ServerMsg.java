@@ -56,6 +56,10 @@ public class ServerMsg {
 		return groups.get(groupId);
 	}
 
+	public Map<Integer, UserMsg> getUsers() {
+		return this.users;
+	}
+
 	public GroupMsg createGroup(int ownerId) {
 		UserMsg owner = users.get(ownerId);
 		if (owner==null) throw new ServerException("User with id="+ownerId+" unknown. Group creation failed.");
@@ -88,6 +92,7 @@ public class ServerMsg {
 	// Methode utilisée pour savoir quoi faire d'un paquet
 	// reçu par le serveur
 	public void processPacket(Packet p) {
+		LOG.info("Server received packet "+p);
 		PacketProcessor pp = null;
 		if (p.destId < 0) { //message de groupe
 			// can be send only if sender is member

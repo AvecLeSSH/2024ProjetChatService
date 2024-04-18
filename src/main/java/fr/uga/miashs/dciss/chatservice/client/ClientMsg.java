@@ -220,13 +220,12 @@ public class ClientMsg {
 
 		// Le client envoie le packet au serveur
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		dos = new DataOutputStream(bos);
+		DataOutputStream dos1 = new DataOutputStream(bos);
 
 		try {
-			dos.writeByte(9);
-			dos.writeInt(name.length());
-			dos.write(name.getBytes(StandardCharsets.UTF_8));
-			dos.flush();
+			dos1.writeByte(9);
+			dos1.writeUTF(name);
+			dos1.flush();
 			LOG.warning("dos size : " + bos.toByteArray());
 
 			sendPacket(0, bos.toByteArray());
@@ -264,10 +263,10 @@ public class ClientMsg {
 //		contacts.put(id, name);
 //	}
 	
-	public void sendFile(int destId, Paths filePath, byte [] fileTitle) throws IOException {
+	/*public void sendFile(int destId, Paths filePath, byte [] fileTitle) throws IOException {
 		byte[] fileData = Files.readAllBytes(Paths.get(filePath.toString()));
 		//ajouter nom fichier et type fichier : dcp faire une autre sendPacket diff avec en paramètre nom et type
-		sendPacket(destId, fileData);
+		sendPacket(destId, fileData);/*
 
 		//méthode pour connaître le type : Files.probeContentType() TEST : typeFile = Files.probeContentType(Paths.get(dataFile.toString()));
 //		try {
@@ -337,7 +336,11 @@ public class ClientMsg {
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
 		ClientMsg c = new ClientMsg("localhost", 1666);
-		c.setName("Ilias");
+		//c.setName("Ilias");
+		//c.askAddContact(1);
+
+
+
 
 		// add a dummy listener that print the content of message as a string
 		c.addMessageListener(p -> System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data)));
@@ -401,13 +404,16 @@ public class ClientMsg {
 
 		Scanner sc = new Scanner(System.in);
 		String lu = null;
+
+		System.out.println("\nNouveau nom d'utilisateur : ");
+		String newUsername = sc.nextLine();
+		c.setName(newUsername);
+		System.out.println("Vous êtes " + c.getName());
+
 		while (!"\\quit".equals(lu)) {
 			try {
 				// test modification de name
-				System.out.println("\nNouveau nom d'utilisateur : ");
-				String newUsername = sc.nextLine();
-				c.setName(newUsername);
-				System.out.println("Vous êtes " + c.getName());
+
 //
 //				System.out.println("Qui voulez vous ajouter dans vos contacts");
 //				int id = Integer.parseInt(sc.nextLine());
