@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import fr.uga.miashs.dciss.chatservice.common.Packet;
 
+import javax.imageio.ImageIO;
+
 /**
  * Manages the connection to a ServerMsg. Method startSession() is used to²
  * establish the connection. Then messages can be send by a call to sendPacket.
@@ -301,4 +303,85 @@ public class ClientMsg {
 
 	}
 
+	// methode pour distinguer les messages recus peu importe le format
+	private void receiveFile() {
+		try {
+			while (s != null && !s.isClosed()) {
+				int sender = dis.readInt();
+				int dest = dis.readInt();
+				int length = dis.readInt();
+				byte[] data = new byte[length];
+				dis.readFully(data);
+				String messageType = getMessageType(data);
+				System.out.println("Received a " + messageType + " message.");
+				notifyMessageListeners(new Packet(sender, dest, data));
+			}
+		} catch (IOException e) {
+			// error, connection closed
+		}
+		closeSession();
+	}
+
+
+	public String getMessageType(byte[] data) {
+		String type = "unknown";
+		if (data != null && data.length > 0) {
+			switch (data[0]) {
+				case (byte) 0xFF:
+					if (data.length > 1 && data[1] == (byte) 0xD8) {
+						type = "image/jpeg";
+					}
+					break;
+				case (byte) 0x89:
+					if (data.length > 3 && data[1] == (byte) 0x50 && data[2] == (byte) 0x4E && data[3] == (byte) 0x47) {
+						type = "image/png";
+					}
+					break;
+				case (byte) 0x47:
+					if (data.length > 3 && data[1] == (byte) 0x49 && data[2] == (byte) 0x46 && data[3] == (byte) 0x38) {
+						type = "image/gif";
+					}
+					break;
+				case (byte) 0x25:
+					if (data.length > 4 && data[1] == (byte) 0x50 && data[2] == (byte) 0x44 && data[3] == (byte) 0x46) {
+						type = "application/pdf";
+					}
+					break;
+				default:
+					type = "text";
+					break;
+			}
+		}
+		return type;
+
+
+	}
+
+	public Object fileTypeReader(){
+		// faire une methode qui transforme le tableau de bytes en le type de fichiers que la methode precedente a dit.
+	String type = getMessageType(data);
+	Object file= null;
+
+	switch (type){
+		case "image/jpeg":
+		case "image/png":
+		case "image/gif":
+			try {
+				ByteArrayOutputStream bis = new ByteArrayOutputStream(data);
+				BufferedImage bImage = ImageIO.read(bis);
+				file = bImage;
+			}
+			catch (IOException e){
+				e.printStackTrace();
+			}
+			break;
+		case "text":
+			file = new String(data, StandardCharsets.UTF_8);
+			break;
+		default:
+			System.out.println("Type de fichier non pris en charge: " + type);
+			break;
+	}
+	return file;
+	}
 }
