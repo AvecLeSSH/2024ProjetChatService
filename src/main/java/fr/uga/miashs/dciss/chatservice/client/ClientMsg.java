@@ -212,6 +212,33 @@ public class ClientMsg {
 		
 	}
 
+	//changer le nom des deux méthodes suivantes
+	// Méthode pour envoyer un fichier avec un titre (elle sera utiliser dans la méthode suivante : sendFile. Cette dernière permet de récupérer les données et de les envoyés grâce à la méthode sendFileAndTitle)
+	public void sendFileAndTitle(int destId, byte[] data, byte[] title) {
+		try {
+			synchronized (dos) {
+				dos.writeInt(destId);
+				dos.writeInt(data.length);
+				dos.write(data);
+				dos.writeInt(title.length); //on envoie la taille du titre
+				dos.write(title); //on envoie le titre
+				dos.flush();
+			}
+		} catch (IOException e) {
+			// error, connection closed
+			closeSession();
+		}
+		
+	}
+	// Méthode pour envoyer un fichier grâce à la méthode sendFileAndTitle 
+	public void sendFile(int destId, Path filePath, String title) throws IOException { 
+		byte[] titleBytes = title.getBytes(); //on récupère le titre du fichier et on le transforme en bytes
+		byte[] fileData = Files.readAllBytes(filePath); //on récupère le contenu fichier et on le transforme en bytes
+		sendFileAndTitle(destId, fileData, titleBytes); //on envoie le fichier via la métjode sendPacket
+		System.out.println("Le fichier s'est bien envoyé"); //on vérifie que le fichier s'est bien envoyé
+		
+	}
+
 
 	public void setName(String name) {
 
