@@ -27,7 +27,7 @@ import fr.uga.miashs.dciss.chatservice.server.ServerMsg;
 import fr.uga.miashs.dciss.chatservice.server.UserMsg;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
+import java.nio.file.Paths;
 import java.util.logging.*;
 /**
  * Manages the connection to a ServerMsg. Method startSession() is used to²
@@ -363,8 +363,19 @@ public class ClientMsg {
 		//c.setName("Ilias");
 		//c.askAddContact(1);
 
-
-
+		//test fichier
+		// c.addMessageListener(p -> {
+		// 	if (p.titleBytes != null) {
+		// 		String title = new String(p.titleBytes);
+		// 		try (FileOutputStream fos = new FileOutputStream(title)) {
+		// 			fos.write(p.data);
+		// 		} catch (IOException e) {
+		// 			System.err.println("Error while saving file: " + e.getMessage());
+		// 		}
+		// 	} else {
+		// 		System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data));
+		// 	}
+		// });
 
 		// add a dummy listener that print the content of message as a string
 		c.addMessageListener(p -> System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data)));
@@ -376,7 +387,13 @@ public class ClientMsg {
 		//c.setName("toto");
 
 
-
+		//test fichier : envoyer fichier
+		//  Path path = Paths.get("path/to/your/file.txt");
+		//  byte[] data = Files.readAllBytes(path);
+		//  byte[] titleBytes = path.getFileName().toString().getBytes();
+		//  dos.writeInt(8); //on lui dit qu'on est dans le protocole 8 : celui des fichiers
+		 
+		//  c.sendPacket(new Packet(1, 2, data, titleBytes));
 
 
 		System.out.println("Vous êtes : " + c.getName());

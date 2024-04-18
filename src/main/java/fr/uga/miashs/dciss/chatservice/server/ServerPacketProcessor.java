@@ -58,8 +58,8 @@ public class ServerPacketProcessor implements PacketProcessor {
 //			renameContact(p.srcId, buf);
 //		}else if (type == 7 ) { //suppression d'un contact
 //			removeContact(p.srcId, buf);
-//		}else if (type ==8) { //envoi de fichier
-//			sendFile(p.destId, p.srcId, buf);
+		}else if (type ==8) { //envoi de fichier
+			sendFile(p.destId, p.srcId, buf, buf);
 		} /*else if (type == 9) {
 				int userId = p.srcId;
 				int length = buf.getInt();
