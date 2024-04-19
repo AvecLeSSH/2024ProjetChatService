@@ -19,6 +19,7 @@ public class InstantMessengerGUI extends JFrame {
     private JTextField usernameField;
     private JButton connectButton;
     private ClientMsg client;
+    private JButton createGroupButton;
 
     public InstantMessengerGUI() {
         setTitle("Messagerie Instantanée");
@@ -51,6 +52,8 @@ public class InstantMessengerGUI extends JFrame {
         usernameField = new JTextField(15);
         connectInputPanel.add(usernameField);
         connectButton = new JButton("Se connecter");
+
+
         connectButton.addActionListener(new ActionListener() {
             @Override
 
@@ -62,6 +65,18 @@ public class InstantMessengerGUI extends JFrame {
         });
         connectInputPanel.add(connectButton);
         connectionPanel.add(connectInputPanel, BorderLayout.CENTER);
+
+        createGroupButton= new JButton("Créer un groupe");
+        connectInputPanel.add(createGroupButton, BorderLayout.SOUTH);
+        createGroupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Ajoutez le code ici pour gérer la création d'un groupe
+                // Vous pouvez également changer d'onglet après la création réussie
+                JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
+                tabbedPane.setSelectedIndex(1); // Onglet de chat
+            }
+        });
 
         tabbedPane.addTab("Connexion", connectionPanel);
 
@@ -118,6 +133,16 @@ public class InstantMessengerGUI extends JFrame {
                 e.printStackTrace();}
             chatArea.append("Moi: " + message + "\n");
             messageField.setText("");
+        }
+    }
+    private void createGroup() {
+        // Ajoutez ici le code pour créer un nouveau groupe
+        // Par exemple, vous pouvez afficher une boîte de dialogue pour entrer le nom du groupe
+        String groupName = JOptionPane.showInputDialog(this, "Entrez le nom du groupe");
+        if (groupName != null && !groupName.trim().isEmpty()) {
+            // Ajoutez ici le code pour créer un groupe avec le nom entré
+            // Par exemple, vous pouvez appeler une méthode de votre client pour créer un groupe
+            client.createGroup(groupName);
         }
     }
 
