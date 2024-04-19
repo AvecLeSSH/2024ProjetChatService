@@ -159,7 +159,7 @@ public class InstantMessengerGUI extends JFrame {
         }
         for (int i = 0; i < nb; i++) {
             // Pour chaque personne, demandez à l'utilisateur l'identifiant de la personne
-            input = JOptionPane.showInputDialog(this, "Entrez l'ID de la personne " + (i + 1) + " :");
+            input = JOptionPane.showInputDialog(this, "Entrez l'ID de la personne " + (i) + " :");
             if (input != null) {
                 int id = Integer.parseInt(input);
                 // Ajoutez l'identifiant de la personne à la liste des membres
