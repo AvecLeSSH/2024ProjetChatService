@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.*;
 import java.net.Socket;
 
 import static java.lang.System.out;
@@ -22,6 +23,7 @@ public class InstantMessengerGUI extends JFrame {
     private ClientMsg client;
     private JButton createGroupButton;
     private JList<String> contactList;
+    private JButton addContactButton;
 
     JTextField aQuiTextField;
 
@@ -111,8 +113,26 @@ public class InstantMessengerGUI extends JFrame {
 
         add(tabbedPane);
 
-        contactList=new JList<>();
-        tabbedPane.addTab("Répertoire", new JScrollPane(contactList));
+
+        JPanel directoryPanel = new JPanel(new BorderLayout());
+        addContactButton = new JButton("Ajouter un contact");
+        addContactButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    addContact();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
+        directoryPanel.add(addContactButton, BorderLayout.NORTH);
+
+        // Ajoutez la liste de contacts au panel du répertoire
+        contactList = new JList<>();
+        directoryPanel.add(new JScrollPane(contactList), BorderLayout.CENTER);
+        tabbedPane.addTab("Répertoire", directoryPanel);
+        add(tabbedPane);
 
     }
 
@@ -134,6 +154,7 @@ public class InstantMessengerGUI extends JFrame {
                 // Vous pouvez également changer d'onglet après la connexion réussie
                 JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
                 tabbedPane.setSelectedIndex(1); // Onglet de chat
+                updateContactList();
             } catch (IOException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Erreur de connexion");
@@ -152,6 +173,33 @@ public class InstantMessengerGUI extends JFrame {
         }
     }
 
+    private void updateContactList() {
+        // Récupérez la liste des contacts
+        Map<Integer, String> contacts = client.getContacts();
+
+        // Convertissez cette liste en un tableau de chaînes
+        String[] contactArray = contacts.values().toArray(new String[0]);
+
+        // Utilisez ce tableau pour créer un nouveau modèle de liste
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for (String contact : contactArray) {
+            listModel.addElement(contact);
+        }
+
+        // Définissez ce modèle comme le modèle de votre JList
+        contactList.setModel(listModel);
+    }
+
+    private void addContact() throws IOException {
+        String input = JOptionPane.showInputDialog(this, "Entrez l'ID de la personne que vous souhaitez ajouter à votre liste de contacts:");
+        String name = JOptionPane.showInputDialog(this, "Quel est le nom de votre contact ?");
+        if (input != null && name != null) {
+            int id = Integer.parseInt(input);
+            client.askAddContact(id);
+            client.addContact(id, name);
+            updateContactList();
+        }
+    }
 
     private void createGroup() throws IOException {
 
@@ -159,15 +207,16 @@ public class InstantMessengerGUI extends JFrame {
         DataOutputStream dos = new DataOutputStream(bos);
         // byte 1 : create group on server
         dos.writeByte(1);
-        String input = JOptionPane.showInputDialog(this, "Combien de personnes voulez-vous ajouter au groupe ?");
+        String input = JOptionPane.showInputDialog(this, "Combien de personnes voulez-vous ajouter à votre groupe ?");
         int nb = Integer.parseInt(input);
         if (input != null) {
             // nb members
             dos.writeInt(nb);
         }
-        for (int i = 0; i < nb; i++) {
+        dos.write(client.getIdentifier());
+        for (int i = 1; i < nb; i++) {
             // Pour chaque personne, demandez à l'utilisateur l'identifiant de la personne
-            input = JOptionPane.showInputDialog(this, "Entrez l'ID de la personne " + (i) + " :");
+            input = JOptionPane.showInputDialog(this, "Entrez l'ID de la personne " + i + " :");
             if (input != null) {
                 int id = Integer.parseInt(input);
                 // Ajoutez l'identifiant de la personne à la liste des membres
