@@ -118,8 +118,13 @@ public class InstantMessengerGUI extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                InstantMessengerGUI gui = new InstantMessengerGUI();
-                gui.setVisible(true);
+                // Nombre d'interfaces à lancer
+                int numberOfInterfaces = 5;
+
+                for (int i = 0; i < numberOfInterfaces; i++) {
+                    InstantMessengerGUI gui = new InstantMessengerGUI();
+                    gui.setVisible(true);
+                }
             }
         });
     }
