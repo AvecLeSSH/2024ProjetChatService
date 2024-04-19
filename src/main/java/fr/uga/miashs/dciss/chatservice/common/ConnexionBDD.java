@@ -70,7 +70,8 @@ public class ConnexionBDD {
                 UserMsg u = entry.getValue();
                 pstmt.setString(1, u.getName());
                 // Assuming getPassword() method exists in UserMsg class
-                pstmt.setInt(2, u.getId());
+                pstmt.setInt(1, u.getId());
+                pstmt.setString(2, u.getName());
                 pstmt.addBatch();
             }
         } catch (SQLException e) {
