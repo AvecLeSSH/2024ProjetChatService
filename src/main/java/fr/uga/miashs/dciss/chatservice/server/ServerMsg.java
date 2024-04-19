@@ -148,6 +148,7 @@ public class ServerMsg {
 					users.put(userId, new UserMsg(userId,this));
 					ConnexionBDD connexion = new ConnexionBDD();
 					connexion.connectToDatabase();
+					connexion.deleteUser();
 					connexion.insertUser(users);
 					LOG.info("Ajout dans BDD");
 				}

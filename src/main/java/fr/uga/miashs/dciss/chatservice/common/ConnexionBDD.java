@@ -78,6 +78,16 @@ public class ConnexionBDD {
             e.printStackTrace(System.err);
         }
     }
+
+    public void deleteUser(){
+        String query = "TRUNCATE TABLE users";
+        try {
+            PreparedStatement pstmt = cnx.prepareStatement(query);
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
     public void insertMessages(List<Message> messages) {
         String query = "INSERT INTO messages (user_id, dest_id, content) VALUES (?, ?, ?)";
 
@@ -99,4 +109,12 @@ public class ConnexionBDD {
         }
     }
 
+    public void deleteMessages() {
+        String query = "TRUNCATE TABLE messages";
+        try {
+            PreparedStatement pstmt = cnx.prepareStatement(query);
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+        }
+    }
 }
