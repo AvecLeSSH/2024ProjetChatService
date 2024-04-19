@@ -1,5 +1,8 @@
 package fr.uga.miashs.dciss.chatservice.client;
 
+
+import fr.uga.miashs.dciss.chatservice.server.UserMsg;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -15,6 +18,7 @@ public class InstantMessengerGUI extends JFrame {
     private JButton sendButton;
     private JTextField usernameField;
     private JButton connectButton;
+    private ClientMsg client;
 
     public InstantMessengerGUI() {
         setTitle("Messagerie Instantanée");
@@ -52,6 +56,8 @@ public class InstantMessengerGUI extends JFrame {
 
             public void actionPerformed(ActionEvent e) {
                 connect();
+                JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
+
             }
         });
         connectInputPanel.add(connectButton);
@@ -119,7 +125,7 @@ public class InstantMessengerGUI extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // Nombre d'interfaces à lancer
-                int numberOfInterfaces = 5;
+                int numberOfInterfaces = 4;
 
                 for (int i = 0; i < numberOfInterfaces; i++) {
                     InstantMessengerGUI gui = new InstantMessengerGUI();
