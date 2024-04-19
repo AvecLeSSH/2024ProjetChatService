@@ -118,6 +118,9 @@ public class InstantMessengerGUI extends JFrame {
             // Vous pouvez également changer d'onglet après la connexion réussie
             JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
             tabbedPane.setSelectedIndex(1); // Onglet de chat
+
+            // Appeler connectToServer() pour établir la connexion
+            connectToServer();
         } else {
             JOptionPane.showMessageDialog(this, "Erreur de connexion");
         }
