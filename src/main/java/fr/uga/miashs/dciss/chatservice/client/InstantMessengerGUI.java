@@ -1,6 +1,13 @@
+package fr.uga.miashs.dciss.chatservice.client;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+
+import static java.lang.System.out;
 
 public class InstantMessengerGUI extends JFrame {
     private JTextArea chatArea;
@@ -16,6 +23,17 @@ public class InstantMessengerGUI extends JFrame {
         setLocationRelativeTo(null);
 
         initComponents();
+        connectToServer();
+    }
+    private DataOutputStream out;
+
+    private void connectToServer() {
+        try {
+            Socket socket = new Socket("localhost", 1666);
+            out = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initComponents() {
@@ -31,6 +49,7 @@ public class InstantMessengerGUI extends JFrame {
         connectButton = new JButton("Se connecter");
         connectButton.addActionListener(new ActionListener() {
             @Override
+
             public void actionPerformed(ActionEvent e) {
                 connect();
             }
@@ -79,14 +98,18 @@ public class InstantMessengerGUI extends JFrame {
             JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
             tabbedPane.setSelectedIndex(1); // Onglet de chat
         } else {
-            JOptionPane.showMessageDialog(this, "Veuillez saisir un pseudo valide.", "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur de connexion");
         }
     }
 
     private void sendMessage() {
         String message = messageField.getText().trim();
         if (!message.isEmpty()) {
-            // Ajoutez le code ici pour envoyer le message au serveur ou au destinataire approprié
+            try {
+                out.writeUTF(message); // Envoie le message au serveur
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();}
             chatArea.append("Moi: " + message + "\n");
             messageField.setText("");
         }
