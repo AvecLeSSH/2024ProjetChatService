@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.net.Socket;
 
@@ -24,6 +25,7 @@ public class InstantMessengerGUI extends JFrame {
     private JButton createGroupButton;
     private JList<String> contactList;
     private JButton addContactButton;
+    private JButton sendFileButton;
 
     JTextField aQuiTextField;
 
@@ -85,6 +87,7 @@ public class InstantMessengerGUI extends JFrame {
         bottomPanel.add(messageField, BorderLayout.CENTER);
 
         sendButton = new JButton("Envoyer");
+
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -92,6 +95,25 @@ public class InstantMessengerGUI extends JFrame {
             }
         });
         bottomPanel.add(sendButton, BorderLayout.EAST);
+        //Ajoutez le bouton "Envoyer un fichier"
+        sendFileButton = new JButton("Envoyer un fichier");
+        sendFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    sendFile();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
+
+        bottomPanel.add(sendFileButton, BorderLayout.SOUTH);
+        chatPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        tabbedPane.addTab("Chat", chatPanel);
+        add(tabbedPane);
+
 
         // Ajoutez le bouton "Créer un groupe" ici
         createGroupButton= new JButton("Créer un groupe");
@@ -188,6 +210,24 @@ public class InstantMessengerGUI extends JFrame {
 
         // Définissez ce modèle comme le modèle de votre JList
         contactList.setModel(listModel);
+    }
+
+    private void sendFile() throws IOException{
+        String input = JOptionPane.showInputDialog(this, "Quel est le chemin du fichier que vous souhaitez envoyer ?");
+        String title = JOptionPane.showInputDialog(this, "Quel est son titre ?");
+        if (input != null && title!=null) {
+            client.sendFile(Integer.parseInt(aQuiTextField.getText()), Paths.get(input),title);
+        }
+
+        /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bos);
+        // byte 8 : send a file
+        dos.writeByte(8);
+        String input = JOptionPane.showInputDialog(this, "Quel est le chemin du fichier que vous souhaitez envoyer ?");
+        if (input != null) {
+            dos.writeUTF(input);
+            client.sendPacket(Integer.parseInt(aQuiTextField.getText()), bos.toByteArray());
+        }*/
     }
 
     private void addContact() throws IOException {
