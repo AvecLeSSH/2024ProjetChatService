@@ -67,6 +67,13 @@
 			<artifactId>derbytools</artifactId>
 			<version>10.15.2.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.30</version> <!-- Version à adapter selon votre besoin -->
+		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
 		<!--

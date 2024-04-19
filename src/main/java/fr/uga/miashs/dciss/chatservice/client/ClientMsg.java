@@ -266,29 +266,31 @@ public class ClientMsg {
 
 		// Le client envoie le packet au serveur
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		dos = new DataOutputStream(bos);
+		DataOutputStream dosAddContact = new DataOutputStream(bos);
 
 		try {
-			dos.writeByte(5);
+			dosAddContact.writeByte(5);
 //			dos.writeInt(4);
-			dos.writeInt(id);
-			dos.flush();
+			dosAddContact.writeInt(id);
+			dosAddContact.flush();
 			sendPacket(0, bos.toByteArray());
 			System.out.println("Demande d'ajout de contact au serveur envoyée");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-//
-//	public void addContact(int id, String name) {
-//		// Le client ajoute un nom à ses contacts
-//		if(askAddContact(id) ){
-//			contacts.put(id, name);
-//		}
-//		else
-//
-//		contacts.put(id, name);
-//	}
+
+	public void addContact(int contactId, String contactName) {
+		// Ask the server to add the contact
+		// Add the contact to the client's contact list
+		contacts.put(contactId, contactName);
+	}
+	public void printAllContacts() {
+		for (String contactName : contacts.values()) {
+			System.out.println(contactName);
+		}
+	}
+
 	
 	/*public void sendFile(int destId, Paths filePath, byte [] fileTitle) throws IOException {
 		byte[] fileData = Files.readAllBytes(Paths.get(filePath.toString()));
@@ -330,13 +332,14 @@ public class ClientMsg {
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
 		ClientMsg c = new ClientMsg("localhost", 1666);
+		PacketListener p2 = new PacketListener(c) ;
 		//c.setName("Ilias");
 		//c.askAddContact(1);
 
 		// add a dummy listener that print the content of message as a string
 		c.addMessageListener(p -> System.out.println(p.srcId + " says to " + p.destId + ": " + new String(p.data)));
-		
-		// add a connection listener that exit application when connection closed
+
+			// add a connection listener that exit application when connection closed
 		c.addConnectionListener(active ->  {if (!active) System.exit(0);});
 
 		c.startSession();
@@ -377,9 +380,7 @@ public class ClientMsg {
 			dos.writeInt(1);
 			dos.writeInt(3);
 			dos.flush();
-
 			c.sendPacket(0, bos.toByteArray());
-
 		}
 
 		/* TEST POUR METHODE REMOVE USER
@@ -412,15 +413,19 @@ public class ClientMsg {
 		c.setName(newUsername);
 		System.out.println("Vous êtes " + c.getName());
 
+		System.out.println("Qui voulez vous ajouter dans vos contacts");
+		int id = Integer.parseInt(sc.nextLine());
+		System.out.println("Quel est le nom du contact ?");
+		String contactName = sc.nextLine();
+		c.askAddContact(id);
+		System.out.println("Demande d'ajout de contact envoyée");
+		c.addContact(id, contactName);
 		while (!"\\quit".equals(lu)) {
 			try {
 				// test modification de name
 
-//
-//				System.out.println("Qui voulez vous ajouter dans vos contacts");
-//				int id = Integer.parseInt(sc.nextLine());
-//				c.askAddContact(id);
-//				System.out.println("Demande d'ajout de contact envoyée");
+				System.out.println("Votre répertoire : ");
+				c.printAllContacts();
 
 				System.out.println("A qui voulez vous écrire ? ");
 				int dest = Integer.parseInt(sc.nextLine());

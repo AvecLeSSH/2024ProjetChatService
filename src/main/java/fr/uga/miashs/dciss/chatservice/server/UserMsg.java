@@ -18,6 +18,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 
+import fr.uga.miashs.dciss.chatservice.common.ConnexionBDD;
+import fr.uga.miashs.dciss.chatservice.common.Message;
 import fr.uga.miashs.dciss.chatservice.common.Packet;
 
 import java.util.*;
@@ -123,6 +125,13 @@ public class UserMsg implements PacketProcessor{
 				dis.readFully(content);
 				// on envoie le paquet à ServerMsg pour qu'il le gère
 				server.processPacket(new Packet(userId,destId,content));
+				Message m = new Message(userId,destId,new String(content));
+				server.addMessage(m);
+				LOG.info("Liste des messages : " + server.getMessages());
+				ConnexionBDD connexion = new ConnexionBDD();
+				connexion.connectToDatabase();
+				connexion.deleteMessages();
+				connexion.insertMessages(server.getMessages());
 			}
 			
 		} catch (IOException e) {
@@ -158,7 +167,7 @@ public class UserMsg implements PacketProcessor{
 		} catch (InterruptedException e) {
 			throw new ServerException("Sending loop thread of "+userId+" has been interrupted.",e);
 		}
-		close();
+//		close();
 	}
 	public void sendContact(int userId, String username) {
 		Packet p = null;
