@@ -12,17 +12,21 @@
 package fr.uga.miashs.dciss.chatservice.common;
 
 //import jdk.javadoc.internal.doclint.Messages;
+import fr.uga.miashs.dciss.chatservice.server.UserMsg;
+
 import java.util.List;
 
 import java.sql.*;  // Import required packages
+import java.util.Map;
 
 public class ConnexionBDD {
     private Connection cnx;
 
     public void connectToDatabase() {
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
             cnx = DriverManager.getConnection("jdbc:mysql://localhost:3306/chatapp?useSSL=false", "root", "");
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace(System.err);
         }
     }
@@ -52,6 +56,23 @@ public class ConnexionBDD {
             resQuery1.close();
             resQuery2.close();
             statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public void insertUser(Map<Integer, UserMsg> users) {
+        String query = "INSERT INTO users (username, password) VALUES (?, ?)";
+
+        try {
+            PreparedStatement pstmt = cnx.prepareStatement(query);
+            for (Map.Entry<Integer, UserMsg> entry : users.entrySet()) {
+                UserMsg u = entry.getValue();
+                pstmt.setString(1, u.getName());
+                // Assuming getPassword() method exists in UserMsg class
+                pstmt.setInt(2, u.getId());
+                pstmt.addBatch();
+            }
         } catch (SQLException e) {
             e.printStackTrace(System.err);
         }

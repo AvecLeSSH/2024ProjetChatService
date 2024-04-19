@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import fr.uga.miashs.dciss.chatservice.common.Message;
 import fr.uga.miashs.dciss.chatservice.common.Packet;
+import fr.uga.miashs.dciss.chatservice.common.ConnexionBDD;
 
 import java.util.*;
 
@@ -92,6 +93,11 @@ public class ServerMsg {
 	}
 
 
+	public void addMessage(Message m) {
+
+		if (m.getDestId() != 0 && m.getUserId() != 0)
+		messages.add(m);
+	}
 
 	public List<Message> getMessages() {
 		return messages;
@@ -140,7 +146,12 @@ public class ServerMsg {
 					dos.writeInt(userId);
 					dos.flush();
 					users.put(userId, new UserMsg(userId,this));
+					ConnexionBDD connexion = new ConnexionBDD();
+					connexion.connectToDatabase();
+					connexion.insertUser(users);
+					LOG.info("Ajout dans BDD");
 				}
+
 				// si l'identifiant existe ou est nouveau alors 
 				// deux "taches"/boucles  sont lancées en parralèle
 				// une pour recevoir les messages du client, 

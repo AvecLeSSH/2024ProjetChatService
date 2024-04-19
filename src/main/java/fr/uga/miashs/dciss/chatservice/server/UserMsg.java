@@ -126,7 +126,7 @@ public class UserMsg implements PacketProcessor{
 				// on envoie le paquet à ServerMsg pour qu'il le gère
 				server.processPacket(new Packet(userId,destId,content));
 				Message m = new Message(userId,destId,new String(content));
-				server.getMessages().add(m);
+				server.addMessage(m);
 				LOG.info("Liste des messages : " + server.getMessages());
 //				ConnexionBDD connexion = new ConnexionBDD();
 //				connexion.connectToDatabase();
