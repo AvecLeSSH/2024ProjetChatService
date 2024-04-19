@@ -1,3 +1,4 @@
+package fr.uga.miashs.dciss.chatservice.client;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

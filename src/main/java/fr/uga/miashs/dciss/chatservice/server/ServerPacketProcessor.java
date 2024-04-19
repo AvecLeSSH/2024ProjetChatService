@@ -161,7 +161,7 @@ public class ServerPacketProcessor implements PacketProcessor {
 			int size = data.getInt();
 			byte[] fileData = new byte[size];
 			data.get(fileData);
-			server.getUser(destId).receiveFile(userId, fileData, title);
+			server.getUser(destId).sendLoopFile(userId, fileData, title);
 		}
 		//ancienne version 
 // 		public void sendFile(int destId, int userId, ByteBuffer data) {

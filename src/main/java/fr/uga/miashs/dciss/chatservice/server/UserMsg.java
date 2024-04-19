@@ -195,8 +195,8 @@ public class UserMsg implements PacketProcessor{
 		sendQueue.offer(p);
 	}
 
-	//test fichiers
-	public void receiveFile(int userId, byte[] fileData, ByteBuffer title) {
+	//Recevoir un fichier
+	public void sendLoopFile(int userId, byte[] fileData, ByteBuffer title) {
 		Packet p = null;
 		try {
 			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
@@ -210,7 +210,8 @@ public class UserMsg implements PacketProcessor{
 				dos.writeInt(p.destId);
 				dos.writeInt(p.data.length);
 				dos.write(p.data);
-				dos.writeInt(p.titleBytes.length);
+				//ajout des données du titre
+				dos.writeInt(p.titleBytes.length); 
 				dos.write(p.titleBytes);
 				dos.flush();
 				
