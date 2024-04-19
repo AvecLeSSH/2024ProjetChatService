@@ -72,7 +72,8 @@ public class ConnexionBDD {
                 // Assuming getPassword() method exists in UserMsg class
                 pstmt.setInt(1, u.getId());
                 pstmt.setString(2, u.getName());
-                pstmt.addBatch();
+                //pstmt.addBatch();
+                pstmt.execute();
             }
         } catch (SQLException e) {
             e.printStackTrace(System.err);
@@ -83,6 +84,7 @@ public class ConnexionBDD {
         String query = "TRUNCATE TABLE users";
         try {
             PreparedStatement pstmt = cnx.prepareStatement(query);
+            pstmt.execute();
         } catch (SQLException e) {
             e.printStackTrace(System.err);
         }
@@ -98,7 +100,8 @@ public class ConnexionBDD {
                 pstmt.setInt(1, message.getUserId());
                 pstmt.setInt(2, message.getDestId());
                 pstmt.setString(3, message.getContent());
-                pstmt.addBatch(); // Ajouter l'insertion à un lot pour un traitement plus efficace
+                //pstmt.addBatch(); // Ajouter l'insertion à un lot pour un traitement plus efficace
+                pstmt.execute();
             }
 
             pstmt.executeBatch(); // Exécuter le lot d'insertions
@@ -113,6 +116,7 @@ public class ConnexionBDD {
         String query = "TRUNCATE TABLE messages";
         try {
             PreparedStatement pstmt = cnx.prepareStatement(query);
+            pstmt.execute();
         } catch (SQLException e) {
             e.printStackTrace(System.err);
         }
