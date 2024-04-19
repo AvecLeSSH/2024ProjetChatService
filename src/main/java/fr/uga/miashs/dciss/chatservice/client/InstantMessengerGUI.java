@@ -214,9 +214,9 @@ public class InstantMessengerGUI extends JFrame {
 
     private void sendFile() throws IOException{
         String input = JOptionPane.showInputDialog(this, "Quel est le chemin du fichier que vous souhaitez envoyer ?");
-        String title = JOptionPane.showInputDialog(this, "Quel est son titre ?");
-        if (input != null && title!=null) {
-            client.sendFile(Integer.parseInt(aQuiTextField.getText()), Paths.get(input),title);
+        //String title = JOptionPane.showInputDialog(this, "Quel est son titre ?");
+        if (input != null) {
+            client.sendFile(Integer.parseInt(aQuiTextField.getText()), Paths.get(input),"title");
         }
 
         /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
