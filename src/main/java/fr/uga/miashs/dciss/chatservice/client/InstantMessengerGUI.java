@@ -6,6 +6,7 @@ import fr.uga.miashs.dciss.chatservice.server.UserMsg;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -20,6 +21,7 @@ public class InstantMessengerGUI extends JFrame {
     private JButton connectButton;
     private ClientMsg client;
     private JButton createGroupButton;
+    private JList<String> contactList;
 
     public InstantMessengerGUI() {
         setTitle("Messagerie Instantanée");
@@ -28,18 +30,13 @@ public class InstantMessengerGUI extends JFrame {
         setLocationRelativeTo(null);
 
         initComponents();
-        connectToServer();
+        //connectToServer();
     }
     private DataOutputStream out;
 
-    private void connectToServer() {
-        try {
-            Socket socket = new Socket("localhost", 1666);
-            out = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
+
+    //Pour déplacer le bouton "Créer un groupe" dans l'onglet de chat, vous pouvez simplement déplacer le code qui ajoute le bouton à l'onglet de connexion vers l'onglet de chat. Voici comment vous pouvez le faire :
 
     private void initComponents() {
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -53,30 +50,15 @@ public class InstantMessengerGUI extends JFrame {
         connectInputPanel.add(usernameField);
         connectButton = new JButton("Se connecter");
 
-
         connectButton.addActionListener(new ActionListener() {
             @Override
-
             public void actionPerformed(ActionEvent e) {
                 connect();
                 JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
-
             }
         });
         connectInputPanel.add(connectButton);
         connectionPanel.add(connectInputPanel, BorderLayout.CENTER);
-
-        createGroupButton= new JButton("Créer un groupe");
-        connectInputPanel.add(createGroupButton, BorderLayout.SOUTH);
-        createGroupButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Ajoutez le code ici pour gérer la création d'un groupe
-                // Vous pouvez également changer d'onglet après la création réussie
-                JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
-                tabbedPane.setSelectedIndex(1); // Onglet de chat
-            }
-        });
 
         tabbedPane.addTab("Connexion", connectionPanel);
 
@@ -103,24 +85,47 @@ public class InstantMessengerGUI extends JFrame {
         });
         bottomPanel.add(sendButton, BorderLayout.EAST);
 
+        // Ajoutez le bouton "Créer un groupe" ici
+        createGroupButton= new JButton("Créer un groupe");
+        createGroupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    createGroup();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
+        bottomPanel.add(createGroupButton, BorderLayout.WEST);
+
         chatPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         tabbedPane.addTab("Chat", chatPanel);
 
         add(tabbedPane);
+
+        contactList=new JList<>();
+        tabbedPane.addTab("Répertoire", new JScrollPane(contactList));
+
     }
 
     private void connect() {
         String username = usernameField.getText().trim();
         if (!username.isEmpty()) {
-            // Ajoutez le code ici pour gérer la connexion au serveur avec le pseudo
-            chatArea.append("Connecté en tant que: " + username + "\n");
-            // Vous pouvez également changer d'onglet après la connexion réussie
-            JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
-            tabbedPane.setSelectedIndex(1); // Onglet de chat
-
-            // Appeler connectToServer() pour établir la connexion
-            connectToServer();
+            try {
+                // Créer une instance de ClientMsg
+                this.client = new ClientMsg("localhost", 1666);
+                // Appeler la méthode start (ou une autre méthode qui démarre le client)
+                client.startSession();
+                chatArea.append("Connecté en tant que: " + username + "\n");
+                // Vous pouvez également changer d'onglet après la connexion réussie
+                JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
+                tabbedPane.setSelectedIndex(1); // Onglet de chat
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erreur de connexion");
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Erreur de connexion");
         }
@@ -138,15 +143,33 @@ public class InstantMessengerGUI extends JFrame {
             messageField.setText("");
         }
     }
-    private void createGroup() {
-        // Ajoutez ici le code pour créer un nouveau groupe
-        // Par exemple, vous pouvez afficher une boîte de dialogue pour entrer le nom du groupe
-        String groupName = JOptionPane.showInputDialog(this, "Entrez le nom du groupe");
-        if (groupName != null && !groupName.trim().isEmpty()) {
-            // Ajoutez ici le code pour créer un groupe avec le nom entré
-            // Par exemple, vous pouvez appeler une méthode de votre client pour créer un groupe
-            client.createGroup(groupName);
+
+
+    private void createGroup() throws IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bos);
+        // byte 1 : create group on server
+        dos.writeByte(1);
+        String input = JOptionPane.showInputDialog(this, "Combien de personnes voulez-vous ajouter au groupe ?");
+        int nb = Integer.parseInt(input);
+        if (input != null) {
+            // nb members
+            dos.writeInt(nb);
         }
+        for (int i = 0; i < nb; i++) {
+            // Pour chaque personne, demandez à l'utilisateur l'identifiant de la personne
+            input = JOptionPane.showInputDialog(this, "Entrez l'ID de la personne " + (i + 1) + " :");
+            if (input != null) {
+                int id = Integer.parseInt(input);
+                // Ajoutez l'identifiant de la personne à la liste des membres
+                dos.writeInt(id);
+            }
+
+
+        }
+        dos.flush();
+        client.sendPacket(0, bos.toByteArray());
     }
 
     public static void main(String[] args) {

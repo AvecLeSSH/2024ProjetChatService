@@ -182,6 +182,8 @@ public class ClientMsg {
 				// start the receive loop
 				new Thread(() -> receiveLoop()).start();
 				notifyConnectionListeners(true);
+
+				System.out.println("connected");
 			} catch (IOException e) {
 				e.printStackTrace();
 				// error, close session
