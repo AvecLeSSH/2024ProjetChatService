@@ -1,17 +1,17 @@
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\MessageListener.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\PacketFactory.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\TxtMessage.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerPacketProcessor.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\ClientMsg.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\Packet.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerMsg.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\GroupMsg.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\PacketListener.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\Message.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\PacketProcessor.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerException.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\UserMsg.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\InstantMessengerGUI.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\ExempleConnexionDB.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\ConnectionListener.java
-C:\Users\margo\Documents\ProjetProg\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\ConnexionBDD.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\InstantMessengerGUI.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\PacketProcessor.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\ConnexionBDD.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\GroupMsg.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\TxtMessage.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerPacketProcessor.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\ClientMsg.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\Packet.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerMsg.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\ExempleConnexionDB.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\MessageListener.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\ServerException.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\ConnectionListener.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\client\PacketListener.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\Message.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\common\PacketFactory.java
+C:\Users\monta\OneDrive\Prog 2\2024ProjetChatService\src\main\java\fr\uga\miashs\dciss\chatservice\server\UserMsg.java

@@ -128,10 +128,10 @@ public class UserMsg implements PacketProcessor{
 				Message m = new Message(userId,destId,new String(content));
 				server.addMessage(m);
 				LOG.info("Liste des messages : " + server.getMessages());
-				ConnexionBDD connexion = new ConnexionBDD();
-				connexion.connectToDatabase();
-				connexion.deleteMessages();
-				connexion.insertMessages(server.getMessages());
+				//ConnexionBDD connexion = new ConnexionBDD();
+				//connexion.connectToDatabase();
+				//connexion.deleteMessages();
+				//connexion.insertMessages(server.getMessages());
 			}
 			
 		} catch (IOException e) {

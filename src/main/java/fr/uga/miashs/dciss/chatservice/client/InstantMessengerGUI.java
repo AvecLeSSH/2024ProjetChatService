@@ -23,6 +23,8 @@ public class InstantMessengerGUI extends JFrame {
     private JButton createGroupButton;
     private JList<String> contactList;
 
+    JTextField aQuiTextField;
+
     public InstantMessengerGUI() {
         setTitle("Messagerie Instantanée");
         setSize(400, 300);
@@ -59,6 +61,10 @@ public class InstantMessengerGUI extends JFrame {
         });
         connectInputPanel.add(connectButton);
         connectionPanel.add(connectInputPanel, BorderLayout.CENTER);
+
+        aQuiTextField = new JTextField(2);
+        aQuiTextField.setText("1");
+        connectionPanel.add(aQuiTextField, BorderLayout.SOUTH);
 
         tabbedPane.addTab("Connexion", connectionPanel);
 
@@ -118,7 +124,13 @@ public class InstantMessengerGUI extends JFrame {
                 this.client = new ClientMsg("localhost", 1666);
                 // Appeler la méthode start (ou une autre méthode qui démarre le client)
                 client.startSession();
+                client.setName(username);
+
+                client.addMessageListener((packet) -> {
+                    chatArea.append(packet.srcId + ": " + new String(packet.data) + "\n");
+                });
                 chatArea.append("Connecté en tant que: " + username + "\n");
+
                 // Vous pouvez également changer d'onglet après la connexion réussie
                 JTabbedPane tabbedPane = (JTabbedPane) getContentPane().getComponent(0);
                 tabbedPane.setSelectedIndex(1); // Onglet de chat
@@ -134,11 +146,7 @@ public class InstantMessengerGUI extends JFrame {
     private void sendMessage() {
         String message = messageField.getText().trim();
         if (!message.isEmpty()) {
-            try {
-                out.writeUTF(message); // Envoie le message au serveur
-                out.flush();
-            } catch (IOException e) {
-                e.printStackTrace();}
+            client.sendPacket(Integer.parseInt(aQuiTextField.getText()), message.getBytes());
             chatArea.append("Moi: " + message + "\n");
             messageField.setText("");
         }

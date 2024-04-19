@@ -1,13 +1,9 @@
 fr\uga\miashs\dciss\chatservice\server\ServerPacketProcessor.class
-InstantMessengerGUI$1.class
 fr\uga\miashs\dciss\chatservice\server\PacketProcessor.class
 fr\uga\miashs\dciss\chatservice\client\PacketListener.class
-InstantMessengerGUI$2.class
 fr\uga\miashs\dciss\chatservice\client\ClientMsg.class
 fr\uga\miashs\dciss\chatservice\common\TxtMessage.class
 fr\uga\miashs\dciss\chatservice\common\ConnexionBDD.class
-InstantMessengerGUI$3.class
-InstantMessengerGUI.class
 fr\uga\miashs\dciss\chatservice\client\ConnectionListener.class
 fr\uga\miashs\dciss\chatservice\server\ServerException.class
 fr\uga\miashs\dciss\chatservice\server\ServerMsg.class

@@ -146,10 +146,10 @@ public class ServerMsg {
 					dos.writeInt(userId);
 					dos.flush();
 					users.put(userId, new UserMsg(userId,this));
-					ConnexionBDD connexion = new ConnexionBDD();
-					connexion.connectToDatabase();
-					connexion.deleteUser();
-					connexion.insertUser(users);
+					//ConnexionBDD connexion = new ConnexionBDD();
+					//connexion.connectToDatabase();
+					//connexion.deleteUser();
+					//connexion.insertUser(users);
 					LOG.info("Ajout dans BDD");
 				}
 
